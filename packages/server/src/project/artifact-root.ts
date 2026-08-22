@@ -1,5 +1,10 @@
 import { join } from 'node:path';
-import { ReticleDir } from '@reticlehq/core';
+import {
+  ReticleDir,
+  projectCandidates,
+  type ProjectCandidate,
+  type ProjectRegistry,
+} from '@reticlehq/core';
 import type { ConfigDiscovery } from '../cli/config-discovery.js';
 
 /**
@@ -15,6 +20,14 @@ import type { ConfigDiscovery } from '../cli/config-discovery.js';
  * project A wrote project B's flow into A's checkout and reported success without naming the path;
  * and `verify_change` could only answer "unknown" because no flow could be persisted for it to match
  * against.
+ *
+ * ## Two sources, one rule
+ *
+ * Candidates arrive from config discovery (which walks out from the daemon's own directory) and from
+ * the user-level project registry (which `init` writes, and which reaches checkouts discovery cannot
+ * see). This function takes the merged list and does not know or care which source an entry came
+ * from — a privileged source would be a second rule, and two rules for one question is how the
+ * answers start disagreeing.
  *
  * ## Why matching on projectId, and not a new wire field
  *
@@ -47,8 +60,8 @@ export type ArtifactRootReason = (typeof ArtifactRootReason)[keyof typeof Artifa
 export interface ArtifactRootQuery {
   /** The connected session's HELLO projectId, when it sent one. */
   projectId: string | undefined;
-  /** What the config search found. Supplied, not performed here — this stays pure. */
-  discovery: ConfigDiscovery;
+  /** Every project this machine knows about. Supplied, not gathered here — this stays pure. */
+  candidates: readonly ProjectCandidate[];
   /** Where artifacts go when the project cannot be identified. Already a `.reticle` path. */
   daemonRoot: string;
 }
@@ -71,13 +84,13 @@ export interface ArtifactRoot {
  * passed in, which is what makes every branch below testable without a fixture tree.
  */
 export function resolveArtifactRoot(query: ArtifactRootQuery): ArtifactRoot {
-  const { projectId, discovery, daemonRoot } = query;
+  const { projectId, candidates, daemonRoot } = query;
 
   if (projectId === undefined || 0 === projectId.length) {
     return { root: daemonRoot, reason: ArtifactRootReason.NO_PROJECT_ID };
   }
 
-  const matches = discovery.found.filter((config) => config.projectId === projectId);
+  const matches = dedupeByDirectory(candidates.filter((c) => c.projectId === projectId));
 
   if (0 === matches.length) {
     return { root: daemonRoot, reason: ArtifactRootReason.NO_MATCH };
@@ -100,4 +113,42 @@ export function resolveArtifactRoot(query: ArtifactRootQuery): ArtifactRoot {
   }
 
   return { root: join(directory, ReticleDir.ROOT), reason: ArtifactRootReason.MATCHED_PROJECT };
+}
+
+/**
+ * One entry per directory.
+ *
+ * Discovery and the registry routinely name the SAME checkout — the registry remembers what `init`
+ * wrote, and discovery finds that same file whenever the daemon happens to be in the tree. Counting
+ * it twice would read as two competing checkouts and make the resolver refuse, which is the one
+ * outcome worse than either source alone.
+ */
+function dedupeByDirectory(matches: readonly ProjectCandidate[]): ProjectCandidate[] {
+  const seen = new Set<string>();
+  const out: ProjectCandidate[] = [];
+  for (const candidate of matches) {
+    if (seen.has(candidate.directory)) continue;
+    seen.add(candidate.directory);
+    out.push(candidate);
+  }
+  return out;
+}
+
+/**
+ * Everything this machine knows about where projects live, from both sources.
+ *
+ * Discovery first, deliberately: it read a `.reticle.json` that exists RIGHT NOW, while the registry
+ * is a cache of something `init` saw once. Order only decides which duplicate survives dedupe, and
+ * the one confirmed a moment ago is the better survivor.
+ */
+export function projectCandidatesFrom(
+  discovery: ConfigDiscovery,
+  registry: ProjectRegistry,
+): ProjectCandidate[] {
+  const discovered: ProjectCandidate[] = discovery.found.flatMap((config) =>
+    config.projectId === undefined || 0 === config.projectId.length
+      ? []
+      : [{ projectId: config.projectId, directory: config.directory }],
+  );
+  return [...discovered, ...projectCandidates(registry)];
 }
