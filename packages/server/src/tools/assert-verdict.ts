@@ -1,5 +1,6 @@
 import { BlindSpotKind, CaptureLoss, PredicateKind } from '@reticlehq/core';
 import { gapsForAction } from '../honesty/instrumentation-gaps.js';
+import { noteSessionGaps } from '../honesty/gap-ledger.js';
 import { declaresState } from '../events/predicate-shape.js';
 import { isStateUnwatched } from '../honesty/blind-spots.js';
 import type { InstrumentationGap } from '@reticlehq/core';
@@ -169,6 +170,7 @@ export async function assertVerdict(
     routeChanged: false,
     routeSignalFired: false,
   });
+  noteSessionGaps(session, gaps);
   return {
     decision: decision as unknown as Record<string, unknown>,
     contradictions,

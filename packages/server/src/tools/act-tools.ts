@@ -28,6 +28,7 @@ import { parsePredicate } from '../events/predicate-parse.js';
 import { causalSummary } from '../capsule/causal-summary.js';
 import { findContradictions } from '../events/contradictions.js';
 import { gapsForAction } from '../honesty/instrumentation-gaps.js';
+import { noteSessionGaps } from '../honesty/gap-ledger.js';
 import { declaresState } from '../events/predicate-shape.js';
 import { isStateUnwatched } from '../honesty/blind-spots.js';
 import {
@@ -800,6 +801,10 @@ export const ACT_TOOLS: ToolDef[] = [
           routeChanged: actionSummary.route !== undefined,
           routeSignalFired: actionSummary.signals.some((name) => name.startsWith('route')),
         });
+        // Recorded on the session, so a later "am I done?" can answer with what is STILL missing
+        // rather than with everything that was ever missing. An empty list closes a gap, which is
+        // why it is noted rather than skipped.
+        noteSessionGaps(session, gaps);
         return withControl(session, {
           ...decision,
           effect: leanActResult(actResult.result),

@@ -74,6 +74,18 @@ export const COVERAGE_TOOLS: ToolDef[] = [
         .describe(
           'Controls you drove that are no longer on the page — usually because the action SUCCEEDED and removed them (archive/delete/submit/navigate). Counted separately so `exercised: 0` never appears immediately after real work.',
         ),
+      instrumentationGaps: z
+        .array(z.unknown())
+        .optional()
+        .describe(
+          'What this app still cannot tell Reticle, as of your most recent verdict — each entry is { kind, missing, cost, fix, source?, ref? }. These are not controls you skipped; they are checks this app CANNOT answer until it is instrumented, so driving the untouched list will not close them. Apply each `fix` and re-verify: the gap disappears from this list when the app can answer, and every later verdict on this app gets stronger. OMITTED when nothing is missing.',
+        ),
+      unproven: z
+        .boolean()
+        .optional()
+        .describe(
+          'True when verification is NOT finished for a reason driving more controls cannot fix — instrumentationGaps is non-empty. Present only when true, so its absence is not a claim.',
+        ),
     },
     handler: async (deps: ToolDeps, args) => {
       const sessionId = asString(args['sessionId']);
@@ -94,11 +106,17 @@ export const COVERAGE_TOOLS: ToolDef[] = [
         session.actedRefs(),
         session.actedLabels(),
       );
+      // The other half of "am I done?". `untouched` answers what you did not DRIVE; this answers
+      // what this app cannot ANSWER, which no amount of further driving will change. Reporting the
+      // first without the second is how an agent finishes a pass believing it verified something the
+      // app was never able to confirm.
+      const gaps = session.gaps?.open() ?? [];
       return {
         total: parseControls(tree).length,
         exercised,
         untouched,
         ...(droveGone > 0 ? { alsoDroveGone: droveGone } : {}),
+        ...(gaps.length > 0 ? { instrumentationGaps: gaps, unproven: true } : {}),
       };
     },
   },
