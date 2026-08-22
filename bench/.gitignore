@@ -9,6 +9,11 @@ raw/*
 !raw/suite-rre.json
 !raw/leak-stress.json
 !raw/stress-tiers.json
+# The text each tool actually returned, per cell. Kept by the rule stated above and for the sharpest
+# case of it: this benchmark makes claims about COMPETITORS' detection, and the first time one of
+# those moved it was our grader that was wrong, not the tool. A competitor's score that cannot be
+# checked against what it actually said is an accusation rather than a measurement.
+!raw/observation-evidence.json
 logs/
 # Ignore run artifacts, but keep the two SVGs embedded in docs/benchmarks.md so the flagship doc
 # renders on a fresh clone (they were previously broken image links).

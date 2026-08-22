@@ -34,8 +34,13 @@
  *     gate instead of leaving the denominator, tools that did not run are absent rather than scored
  *     zero, and the network-timeout scenario grades an observed unresolved request rather than a
  *     string that appears in the URL.
+ * 2 — the network-timeout grader accepts either vocabulary for an unresolved request. Revision 1
+ *     required a word like "pending", which Chrome DevTools and Reticle write and Playwright does
+ *     not: it reports the same fact structurally, by listing the request with no response beside
+ *     siblings that have one. Revision 1 therefore scored a competitor as missing a fault it had
+ *     plainly reported, so its detection numbers are not comparable with these.
  */
-export const HARNESS_REVISION = 1;
+export const HARNESS_REVISION = 2;
 
 /**
  * Compare the baseline's provenance against the running harness.

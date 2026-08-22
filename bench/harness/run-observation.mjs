@@ -2,7 +2,9 @@
 // For each scenario: (optionally) capture a clean baseline, inject the regression,
 // run each tool's idiomatic recipe, measure every payload, grade detection by a
 // fixed rule, revert. Any failed cell is recorded verdict="NOT MEASURED".
-import { writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { captureText, mergeEvidence } from './observation-evidence.mjs';
+import { unresolvedRequestDetected } from './unresolved-request.mjs';
 import { makeAdapter } from './adapters.mjs';
 import { inject, revert, revertAll } from './inject.mjs';
 import { BENCH_URL } from './ports.mjs';
@@ -209,15 +211,19 @@ const SCENARIOS = [
       { wait: 1600 },
     ],
     mode: 'present',
-    // Match the request's STATE, never its name. The endpoint is `/api/broken/timeout`, so the old
-    // `/timeout/i` was satisfied by the URL string in every tool's network listing — the observation
-    // could not fail. All three tools "detected" it at full confidence, in one of only ten
-    // real-regression scenarios, and the free true-positive inflated every column including ours.
+    // Match the request's STATE, never its name, and accept either way a tool expresses that state.
     //
-    // None of these words can appear in the URL, so a match means the tool reported a request it
-    // could see had not resolved. A tool whose network listing cannot express that now MISSES this
-    // scenario, which is the honest result: an agent reading that listing could not tell either.
-    rx: /\b(pending|in[-\s]?flight|unresolved|timed out|hung|no response)\b/i,
+    // The original `/timeout/i` was satisfied by the URL string itself, so the observation could not
+    // fail and all three tools scored a free true positive on one of only ten real-regression
+    // scenarios. Requiring a word like "pending" fixed that and broke fairness instead: DevTools and
+    // Reticle write the word, Playwright reports it structurally by listing the request with no
+    // response beside siblings that have one, and we scored it as a miss for a fault it had plainly
+    // reported.
+    //
+    // `unresolvedRequestDetected` asks the question both vocabularies answer, and stays honest by
+    // what it refuses — a request that COMPLETED never counts, however much its path spells the
+    // fault. That negative control is a standing test.
+    detect: (obsText) => unresolvedRequestDetected(obsText, '/api/broken/timeout'),
     signal: 'request to /api/broken/timeout still unresolved (the endpoint never responds)',
   },
 
@@ -266,6 +272,10 @@ function normalize(s) {
 
 function grade(sc, regr, baseline) {
   if (sc.skip) return { detected: null, detail: 'NOT MEASURED — see notes' };
+  // A scenario may bring its own detector when one pattern cannot ask the question fairly across
+  // tools that word the same fact differently. Checked first, so such a scenario is not forced back
+  // into a regex it has outgrown.
+  if ('function' === typeof sc.detect) return sc.detect(regr.obsText);
   if ('present' === sc.mode) return sc.rx.test(regr.obsText);
   if ('absent' === sc.mode) return !sc.rx.test(regr.obsText);
   if ('baseline' === sc.mode) {
@@ -288,6 +298,8 @@ function grade(sc, regr, baseline) {
 }
 
 const rows = [];
+/** What the grader read, per cell. See observation-evidence.mjs for why this is kept. */
+const evidence = [];
 const which = process.argv[2]; // optional single scenario id
 const list = which ? SCENARIOS.filter((s) => s.id === which) : SCENARIOS;
 
@@ -373,6 +385,24 @@ for (const sc of list) {
           notes: `obs=${sc.observe}; signal=${sc.signal}; ${detail}; calls=${regr.cycle.map((c) => c.call).join('>')}`,
           _obsTokens: regr.cycle.at(-1)?.tokens_o200k ?? null,
         };
+        // The text the verdict above was computed from, kept so the verdict can be argued with. The
+        // matcher is stored beside it: a cell can be wrong because the tool said nothing useful, or
+        // because our pattern did not match how it words it, and those two are indistinguishable
+        // from the row alone.
+        evidence.push({
+          scenario: sc.id,
+          tool,
+          mode: sc.mode,
+          matcher:
+            'function' === typeof sc.detect
+              ? 'detect()'
+              : (sc.rx?.source ?? sc.count?.source ?? null),
+          expected_detect: sc.expectDetect,
+          detected_issue: detected,
+          calls: regr.cycle.map((c) => c.call),
+          observation: captureText(regr.obsText),
+          ...(null === baseline ? {} : { baseline_observation: captureText(baseline.obsText) }),
+        });
       });
     } catch (e) {
       // Best-effort: an abandoned cell leaves its browser up, and 36 cells of leaked Chrome would
@@ -411,5 +441,13 @@ for (const sc of list) {
 }
 revertAll();
 writeFileSync('bench/raw/observation-results.json', JSON.stringify(rows, null, 2));
-console.log(`\nwrote ${rows.length} rows`);
+// Merged, not overwritten: a single-scenario run rewrites the RESULTS file with only its own rows,
+// and re-checking one disputed cell must add to the record rather than erase the other thirty-five.
+const EVIDENCE_PATH = 'bench/raw/observation-evidence.json';
+const stored = existsSync(EVIDENCE_PATH) ? JSON.parse(readFileSync(EVIDENCE_PATH, 'utf8')) : [];
+const allEvidence = mergeEvidence(stored, evidence);
+writeFileSync(EVIDENCE_PATH, JSON.stringify(allEvidence, null, 2));
+console.log(
+  `\nwrote ${rows.length} rows, ${evidence.length} evidence cells (${allEvidence.length} stored)`,
+);
 process.exit(0);

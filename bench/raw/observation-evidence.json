@@ -1,0 +1,617 @@
+[
+  {
+    "scenario": "hidden-api-500",
+    "tool": "playwright",
+    "mode": "present",
+    "matcher": "\\b500\\b",
+    "expected_detect": true,
+    "detected_issue": true,
+    "calls": [
+      "browser_click",
+      "browser_click",
+      "browser_network_requests"
+    ],
+    "observation": {
+      "text": "### Result\n192. [POST] http://localhost:8787/api/login => [200] OK\n194. [GET] http://localhost:8787/api/items?limit=1 => [200] OK\n196. [GET] http://localhost:8787/api/broken/500 => [500] Internal Server Error\n\nNote: 193 static requests not shown, run with \"static\" option to see them.",
+      "truncated": false,
+      "chars": 284
+    }
+  },
+  {
+    "scenario": "hidden-api-500",
+    "tool": "devtools",
+    "mode": "present",
+    "matcher": "\\b500\\b",
+    "expected_detect": true,
+    "detected_issue": true,
+    "calls": [
+      "click",
+      "click",
+      "list_network_requests"
+    ],
+    "observation": {
+      "text": "## Network requests\nShowing 1-3 of 3 (Page 1 of 1).\nreqid=194 POST http://localhost:8787/api/login [200]\nreqid=196 GET http://localhost:8787/api/items?limit=1 [200]\nreqid=199 GET http://localhost:8787/api/broken/500 [500]",
+      "truncated": false,
+      "chars": 221
+    }
+  },
+  {
+    "scenario": "hidden-api-500",
+    "tool": "reticle",
+    "mode": "present",
+    "matcher": "\\b500\\b",
+    "expected_detect": true,
+    "detected_issue": true,
+    "calls": [
+      "reticle_act",
+      "reticle_act",
+      "reticle_network"
+    ],
+    "observation": {
+      "text": "{\"calls\":[{\"method\":\"POST\",\"url\":\"http://localhost:8787/api/login\",\"status\":200,\"statusText\":\"OK\",\"contentType\":\"application/json; charset=utf-8\",\"responseSize\":67,\"requestBody\":\"{\\\"email\\\":\\\"admin@reticle.dev\\\",\\\"password\\\":\\\"[REDACTED]\\\"}\",\"responseBody\":\"{\\\"token\\\":\\\"[REDACTED]\\\",\\\"user\\\":{\\\"email\\\":\\\"admin@reticle.dev\\\"}}\",\"ms\":6,\"headers\":{\"etag\":\"W/\\\"43-e1C33w6ch6DYUMIJ5AGObntl9VA\\\"\",\"connection\":\"keep-alive\",\"access-control-allow-origin\":\"*\",\"content-length\":\"67\",\"keep-alive\":\"timeout=5\",\"date\":\"Sat, 22 Aug 2026 17:18:20 GMT\",\"content-type\":\"application/json; charset=utf-8\",\"x-powered-by\":\"Express\"}},{\"method\":\"GET\",\"url\":\"http://localhost:8787/api/items?limit=1\",\"status\":200,\"statusText\":\"OK\",\"contentType\":\"application/json; charset=utf-8\",\"responseSize\":49,\"responseBody\":\"{\\\"total\\\":1000,\\\"items\\\":[{\\\"id\\\":1,\\\"name\\\":\\\"Item 1\\\"}]}\",\"ms\":8,\"headers\":{\"etag\":\"W/\\\"31-N9j67PaXJR1yIoCgWCkvi3gJWUE\\\"\",\"connection\":\"keep-alive\",\"access-control-allow-origin\":\"*\",\"content-length\":\"49\",\"keep-alive\":\"timeout=5\",\"date\":\"Sat, 22 Aug 2026 17:18:21 GMT\",\"content-type\":\"application/json; charset=utf-8\",\"x-powered-by\":\"Express\"}},{\"method\":\"GET\",\"url\":\"http://localhost:8787/api/broken/500\",\"status\":500,\"statusText\":\"Internal Server Error\",\"contentType\":\"application/json; charset=utf-8\",\"responseSize\":33,\"responseBody\":\"{\\\"error\\\":\\\"internal server error\\\"}\",\"ms\":2,\"headers\":{\"etag\":\"W/\\\"21-qIMwRienCznwY0yu6z9U53YXV60\\\"\",\"connection\":\"keep-alive\",\"access-control-allow-origin\":\"*\",\"content-length\":\"33\",\"keep-alive\":\"timeout=5\",\"date\":\"Sat, 22 Aug 2026 17:18:21 GMT\",\"content-type\":\"application/json; charset=utf-8\",\"x-powered-by\":\"Express\"}},{\"method\":\"GET\",\"url\":\"http://localhost:8787/api/build-log\",\"status\":200,\"ms\":1330,\"headers\":{\"transfer-encoding\":\"chunked\",\"access-control-allow-origin\":\"*\",\"cache-control\":\"no-cache\",\"date\":\"Sat, 22 Aug 2026 17:18:21 GMT\",\"content-type\":\"text/event-stream\",\"x-powered-by\":\"Express\",\"connection\":\"keep-alive\"}}],\"cost\":{\"bytes\":1970,\"tokens\":493}}",
+      "truncated": false,
+      "chars": 2005
+    }
+  },
+  {
+    "scenario": "wrong-status-404",
+    "tool": "playwright",
+    "mode": "present",
+    "matcher": "\\b404\\b",
+    "expected_detect": true,
+    "detected_issue": true,
+    "calls": [
+      "browser_click",
+      "browser_click",
+      "browser_network_requests"
+    ],
+    "observation": {
+      "text": "### Result\n192. [POST] http://localhost:8787/api/login => [200] OK\n194. [GET] http://localhost:8787/api/items?limit=1 => [200] OK\n196. [GET] http://localhost:8787/api/broken/404 => [404] Not Found\n\nNote: 193 static requests not shown, run with \"static\" option to see them.",
+      "truncated": false,
+      "chars": 272
+    }
+  },
+  {
+    "scenario": "wrong-status-404",
+    "tool": "devtools",
+    "mode": "present",
+    "matcher": "\\b404\\b",
+    "expected_detect": true,
+    "detected_issue": true,
+    "calls": [
+      "click",
+      "click",
+      "list_network_requests"
+    ],
+    "observation": {
+      "text": "## Network requests\nShowing 1-3 of 3 (Page 1 of 1).\nreqid=194 POST http://localhost:8787/api/login [200]\nreqid=196 GET http://localhost:8787/api/items?limit=1 [200]\nreqid=199 GET http://localhost:8787/api/broken/404 [404]",
+      "truncated": false,
+      "chars": 221
+    }
+  },
+  {
+    "scenario": "wrong-status-404",
+    "tool": "reticle",
+    "mode": "present",
+    "matcher": "\\b404\\b",
+    "expected_detect": true,
+    "detected_issue": true,
+    "calls": [
+      "reticle_act",
+      "reticle_act",
+      "reticle_network"
+    ],
+    "observation": {
+      "text": "{\"calls\":[{\"method\":\"POST\",\"url\":\"http://localhost:8787/api/login\",\"status\":200,\"statusText\":\"OK\",\"contentType\":\"application/json; charset=utf-8\",\"responseSize\":67,\"requestBody\":\"{\\\"email\\\":\\\"admin@reticle.dev\\\",\\\"password\\\":\\\"[REDACTED]\\\"}\",\"responseBody\":\"{\\\"token\\\":\\\"[REDACTED]\\\",\\\"user\\\":{\\\"email\\\":\\\"admin@reticle.dev\\\"}}\",\"ms\":3,\"headers\":{\"etag\":\"W/\\\"43-e1C33w6ch6DYUMIJ5AGObntl9VA\\\"\",\"connection\":\"keep-alive\",\"access-control-allow-origin\":\"*\",\"content-length\":\"67\",\"keep-alive\":\"timeout=5\",\"date\":\"Sat, 22 Aug 2026 17:18:44 GMT\",\"content-type\":\"application/json; charset=utf-8\",\"x-powered-by\":\"Express\"}},{\"method\":\"GET\",\"url\":\"http://localhost:8787/api/items?limit=1\",\"status\":200,\"statusText\":\"OK\",\"contentType\":\"application/json; charset=utf-8\",\"responseSize\":49,\"responseBody\":\"{\\\"total\\\":1000,\\\"items\\\":[{\\\"id\\\":1,\\\"name\\\":\\\"Item 1\\\"}]}\",\"ms\":6,\"headers\":{\"etag\":\"W/\\\"31-N9j67PaXJR1yIoCgWCkvi3gJWUE\\\"\",\"connection\":\"keep-alive\",\"access-control-allow-origin\":\"*\",\"content-length\":\"49\",\"keep-alive\":\"timeout=5\",\"date\":\"Sat, 22 Aug 2026 17:18:45 GMT\",\"content-type\":\"application/json; charset=utf-8\",\"x-powered-by\":\"Express\"}},{\"method\":\"GET\",\"url\":\"http://localhost:8787/api/broken/404\",\"status\":404,\"statusText\":\"Not Found\",\"contentType\":\"application/json; charset=utf-8\",\"responseSize\":21,\"responseBody\":\"{\\\"error\\\":\\\"not found\\\"}\",\"ms\":1,\"headers\":{\"etag\":\"W/\\\"15-3jlv4LtvSUoQruAmr3ef7Px06u0\\\"\",\"connection\":\"keep-alive\",\"access-control-allow-origin\":\"*\",\"content-length\":\"21\",\"keep-alive\":\"timeout=5\",\"date\":\"Sat, 22 Aug 2026 17:18:45 GMT\",\"content-type\":\"application/json; charset=utf-8\",\"x-powered-by\":\"Express\"}}],\"cost\":{\"bytes\":1634,\"tokens\":409}}",
+      "truncated": false,
+      "chars": 1669
+    }
+  },
+  {
+    "scenario": "cors-blocked",
+    "tool": "playwright",
+    "mode": "present",
+    "matcher": "cors",
+    "expected_detect": true,
+    "detected_issue": true,
+    "calls": [
+      "browser_click",
+      "browser_click",
+      "browser_network_requests"
+    ],
+    "observation": {
+      "text": "### Result\n192. [POST] http://localhost:8787/api/login => [200] OK\n194. [GET] http://localhost:8787/api/items?limit=1 => [200] OK\n196. [GET] http://localhost:8787/api/broken/cors => [FAILED] net::ERR_FAILED\n197. [GET] http://localhost:8787/api/broken/cors => [FAILED] net::ERR_FAILED\n\nNote: 193 static requests not shown, run with \"static\" option to see them.",
+      "truncated": false,
+      "chars": 359
+    }
+  },
+  {
+    "scenario": "cors-blocked",
+    "tool": "devtools",
+    "mode": "present",
+    "matcher": "cors",
+    "expected_detect": true,
+    "detected_issue": true,
+    "calls": [
+      "click",
+      "click",
+      "list_network_requests"
+    ],
+    "observation": {
+      "text": "## Network requests\nShowing 1-3 of 3 (Page 1 of 1).\nreqid=194 POST http://localhost:8787/api/login [200]\nreqid=196 GET http://localhost:8787/api/items?limit=1 [200]\nreqid=199 GET http://localhost:8787/api/broken/cors [net::ERR_FAILED]",
+      "truncated": false,
+      "chars": 234
+    }
+  },
+  {
+    "scenario": "cors-blocked",
+    "tool": "reticle",
+    "mode": "present",
+    "matcher": "cors",
+    "expected_detect": true,
+    "detected_issue": true,
+    "calls": [
+      "reticle_act",
+      "reticle_act",
+      "reticle_network"
+    ],
+    "observation": {
+      "text": "{\"calls\":[{\"method\":\"POST\",\"url\":\"http://localhost:8787/api/login\",\"status\":200,\"statusText\":\"OK\",\"contentType\":\"application/json; charset=utf-8\",\"responseSize\":67,\"requestBody\":\"{\\\"email\\\":\\\"admin@reticle.dev\\\",\\\"password\\\":\\\"[REDACTED]\\\"}\",\"responseBody\":\"{\\\"token\\\":\\\"[REDACTED]\\\",\\\"user\\\":{\\\"email\\\":\\\"admin@reticle.dev\\\"}}\",\"ms\":3,\"headers\":{\"etag\":\"W/\\\"43-e1C33w6ch6DYUMIJ5AGObntl9VA\\\"\",\"connection\":\"keep-alive\",\"access-control-allow-origin\":\"*\",\"content-length\":\"67\",\"keep-alive\":\"timeout=5\",\"date\":\"Sat, 22 Aug 2026 17:19:07 GMT\",\"content-type\":\"application/json; charset=utf-8\",\"x-powered-by\":\"Express\"}},{\"method\":\"GET\",\"url\":\"http://localhost:8787/api/items?limit=1\",\"status\":200,\"statusText\":\"OK\",\"contentType\":\"application/json; charset=utf-8\",\"responseSize\":49,\"responseBody\":\"{\\\"total\\\":1000,\\\"items\\\":[{\\\"id\\\":1,\\\"name\\\":\\\"Item 1\\\"}]}\",\"ms\":5,\"headers\":{\"etag\":\"W/\\\"31-N9j67PaXJR1yIoCgWCkvi3gJWUE\\\"\",\"connection\":\"keep-alive\",\"access-control-allow-origin\":\"*\",\"content-length\":\"49\",\"keep-alive\":\"timeout=5\",\"date\":\"Sat, 22 Aug 2026 17:19:08 GMT\",\"content-type\":\"application/json; charset=utf-8\",\"x-powered-by\":\"Express\"}},{\"method\":\"GET\",\"url\":\"http://localhost:8787/api/broken/cors\",\"status\":0,\"ms\":2},{\"method\":\"GET\",\"url\":\"http://localhost:8787/api/build-log\",\"status\":200,\"ms\":1326,\"headers\":{\"transfer-encoding\":\"chunked\",\"access-control-allow-origin\":\"*\",\"cache-control\":\"no-cache\",\"date\":\"Sat, 22 Aug 2026 17:19:08 GMT\",\"content-type\":\"text/event-stream\",\"x-powered-by\":\"Express\",\"connection\":\"keep-alive\"}}],\"cost\":{\"bytes\":1533,\"tokens\":384}}",
+      "truncated": false,
+      "chars": 1568
+    }
+  },
+  {
+    "scenario": "silent-dom-regression",
+    "tool": "playwright",
+    "mode": "baseline",
+    "matcher": null,
+    "expected_detect": true,
+    "detected_issue": true,
+    "calls": [
+      "browser_click",
+      "browser_snapshot"
+    ],
+    "observation": {
+      "text": "### Page\n- Page URL: http://localhost:4312/overview\n- Page Title: Reticle · Mission Control\n- Console: 4 errors, 1 warnings\n### Snapshot\n```yaml\n- generic [ref=e1]:\n  - generic [ref=e22]:\n    - complementary [ref=e23]:\n      - generic [ref=e26]:\n        - generic [ref=e27]: Reticle\n        - generic [ref=e28]: mission control\n      - generic [ref=e29]: Workspace\n      - button \"Overview\" [active] [ref=e30] [cursor=pointer]:\n        - img [ref=e31]\n        - text: Overview\n      - button \"Deployments 40\" [ref=e33] [cursor=pointer]:\n        - img [ref=e34]\n        - text: Deployments\n        - generic [ref=e36]: \"40\"\n      - button \"Compose\" [ref=e37] [cursor=pointer]:\n        - img [ref=e38]\n        - text: Compose\n      - button \"Diagnostics\" [ref=e40] [cursor=pointer]:\n        - img [ref=e41]\n        - text: Diagnostics\n      - button \"Hostile\" [ref=e43] [cursor=pointer]:\n        - img [ref=e44]\n        - text: Hostile\n      - button \"Saved Items\" [ref=e46] [cursor=pointer]:\n        - img [ref=e47]\n        - text: Saved Items\n      - generic \"Reticle agent session\" [ref=e50]:\n        - generic [ref=e52]:\n          - generic [ref=e53]: Reticle connected\n          - generic [ref=e54]: session · demo\n    - generic [ref=e55]:\n      - banner [ref=e56]:\n        - generic [ref=e57]:\n          - generic [ref=e58]: Reticle\n          - generic [ref=e59]: /\n          - heading \"Overview\" [level=1] [ref=e60]\n          - generic [ref=e61]: fleet health at a glance\n        - button \"Search or jump to… ⌘K\" [ref=e62] [cursor=pointer]:\n          - img [ref=e63]\n          - text: Search or jump to…\n          - generic [ref=e65]: ⌘K\n        - button \"Sign out\" [ref=e66] [cursor=pointer]\n        - generic \"admin@reticle.dev\" [ref=e67]: A\n      - generic [ref=e69]:\n        - generic [ref=e70]:\n          - generic [ref=e71]:\n            - generic [ref=e72]: Deploys today\n            - generic [ref=e73]: \"312\"\n            - generic [ref=e74]: ▲ 12.4% vs last week\n            - img [ref=e76]\n          - generic [ref=e79]:\n            - generic [ref=e80]: Success rate\n            - generic [ref=e82]: 99.2%\n            - generic [ref=e83]: ▲ 0.6pt vs last week\n            - img [ref=e85]\n          - generic [ref=e88]:\n            - generic [ref=e89]: p95 latency\n            - generic [ref=e91]: 142ms\n            - generic [ref=e92]: ▼ 8.1% vs last week\n            - img [ref=e94]\n        - generic [ref=e97]:\n          - generic [ref=e98]:\n            - generic [ref=e99]:\n              - generic [ref=e100]:\n                - generic [ref=e101]: Traffic\n                - heading \"Requests per minute\" [level=3] [ref=e102]\n              - generic [ref=e103]: live\n            - img [ref=e105]\n          - generic [ref=e108]:\n            - generic [ref=e109]: Activity\n            - generic [ref=e112]:\n              - generic [ref=e113]: api-gateway shipped to production · us-east-1\n              - generic [ref=e114]: 2m ago · deploy\n            - generic [ref=e117]:\n              - generic [ref=e118]: analytics-pipeline scaled 6 → 11 replicas\n              - generic [ref=e119]: 9m ago · scale\n            - generic [ref=e122]:\n              - generic [ref=e123]: billing-worker p95 latency above 400ms\n              - generic [ref=e124]: 14m ago · alert\n            - generic [ref=e127]:\n              - generic [ref=e128]: web-frontend preview deployed by mara\n              - generic [ref=e129]: 21m ago · deploy\n            - generic [ref=e132]:\n              - generic [ref=e133]: search-indexer rolled back to a31f0c9\n              - generic [ref=e134]: 33m ago · rollback\n            - generic [ref=e137]:\n              - generic [ref=e138]: auth-service shipped to staging · eu-west-1\n              - generic [ref=e139]: 41m ago · deploy\n  - generic:\n    - generic:\n      - text: Agent activity will appear here\n      - button \"Start Reticle\" [ref=e20]:\n        - img\n```",
+      "truncated": false,
+      "chars": 3903
+    },
+    "baseline_observation": {
+      "text": "### Page\n- Page URL: http://localhost:4312/overview\n- Page Title: Reticle · Mission Control\n- Console: 4 errors, 1 warnings\n### Snapshot\n```yaml\n- generic [ref=e1]:\n  - generic [ref=e22]:\n    - complementary [ref=e23]:\n      - generic [ref=e26]:\n        - generic [ref=e27]: Reticle\n        - generic [ref=e28]: mission control\n      - generic [ref=e29]: Workspace\n      - button \"Overview\" [active] [ref=e30] [cursor=pointer]:\n        - img [ref=e31]\n        - text: Overview\n      - button \"Deployments 40\" [ref=e33] [cursor=pointer]:\n        - img [ref=e34]\n        - text: Deployments\n        - generic [ref=e36]: \"40\"\n      - button \"Compose\" [ref=e37] [cursor=pointer]:\n        - img [ref=e38]\n        - text: Compose\n      - button \"Diagnostics\" [ref=e40] [cursor=pointer]:\n        - img [ref=e41]\n        - text: Diagnostics\n      - button \"Hostile\" [ref=e43] [cursor=pointer]:\n        - img [ref=e44]\n        - text: Hostile\n      - button \"Saved Items\" [ref=e46] [cursor=pointer]:\n        - img [ref=e47]\n        - text: Saved Items\n      - generic \"Reticle agent session\" [ref=e50]:\n        - generic [ref=e52]:\n          - generic [ref=e53]: Reticle connected\n          - generic [ref=e54]: session · demo\n    - generic [ref=e55]:\n      - banner [ref=e56]:\n        - generic [ref=e57]:\n          - generic [ref=e58]: Reticle\n          - generic [ref=e59]: /\n          - heading \"Overview\" [level=1] [ref=e60]\n          - generic [ref=e61]: fleet health at a glance\n        - button \"Search or jump to… ⌘K\" [ref=e62] [cursor=pointer]:\n          - img [ref=e63]\n          - text: Search or jump to…\n          - generic [ref=e65]: ⌘K\n        - button \"Sign out\" [ref=e66] [cursor=pointer]\n        - generic \"admin@reticle.dev\" [ref=e67]: A\n      - generic [ref=e69]:\n        - generic [ref=e70]:\n          - generic [ref=e71]:\n            - generic [ref=e72]: Deploys today\n            - generic [ref=e73]: \"312\"\n            - generic [ref=e74]: ▲ 12.4% vs last week\n            - img [ref=e76]\n          - generic [ref=e79]:\n            - generic [ref=e80]: Success rate\n            - generic [ref=e82]: 99.2%\n            - generic [ref=e83]: ▲ 0.6pt vs last week\n            - img [ref=e85]\n          - generic [ref=e88]:\n            - generic [ref=e89]: p95 latency\n            - generic [ref=e91]: 142ms\n            - generic [ref=e92]: ▼ 8.1% vs last week\n            - img [ref=e94]\n          - generic [ref=e97]:\n            - generic [ref=e98]: Active services\n            - generic [ref=e99]: \"48\"\n            - generic [ref=e100]: ▲ 4.0% vs last week\n            - img [ref=e102]\n        - generic [ref=e105]:\n          - generic [ref=e106]:\n            - generic [ref=e107]:\n              - generic [ref=e108]:\n                - generic [ref=e109]: Traffic\n                - heading \"Requests per minute\" [level=3] [ref=e110]\n              - generic [ref=e111]: live\n            - img [ref=e113]\n          - generic [ref=e116]:\n            - generic [ref=e117]: Activity\n            - generic [ref=e120]:\n              - generic [ref=e121]: api-gateway shipped to production · us-east-1\n              - generic [ref=e122]: 2m ago · deploy\n            - generic [ref=e125]:\n              - generic [ref=e126]: analytics-pipeline scaled 6 → 11 replicas\n              - generic [ref=e127]: 9m ago · scale\n            - generic [ref=e130]:\n              - generic [ref=e131]: billing-worker p95 latency above 400ms\n              - generic [ref=e132]: 14m ago · alert\n            - generic [ref=e135]:\n              - generic [ref=e136]: web-frontend preview deployed by mara\n              - generic [ref=e137]: 21m ago · deploy\n            - generic [ref=e140]:\n              - generic [ref=e141]: search-indexer rolled back to a31f0c9\n              - generic [ref=e142]: 33m ago · rollback\n            - generic [ref=e145]:\n              - generic [ref=e146]: auth-service shipped to staging · eu-west-1\n              - generic [ref=e147]: 41m ago · deploy\n  - generic:\n    - generic:\n      - text: Agent activity will appear here\n      - button \"Start Reticle\" [ref=e20]:\n        - img\n```",
+      "truncated": false,
+      "chars": 4107
+    }
+  },
+  {
+    "scenario": "silent-dom-regression",
+    "tool": "devtools",
+    "mode": "baseline",
+    "matcher": null,
+    "expected_detect": true,
+    "detected_issue": true,
+    "calls": [
+      "click",
+      "take_snapshot"
+    ],
+    "observation": {
+      "text": "## Latest page snapshot\nuid=1_0 RootWebArea \"Reticle · Mission Control\" url=\"http://localhost:4312/overview\"\n  uid=2_0 complementary\n    uid=2_1 StaticText \"Reticle\"\n    uid=2_2 StaticText \"MISSION CONTROL\"\n    uid=2_3 StaticText \"WORKSPACE\"\n    uid=2_4 button \"Overview\" focusable focused\n    uid=2_5 button \"Deployments 40\"\n    uid=2_6 button \"Compose\"\n    uid=2_7 button \"Diagnostics\"\n    uid=2_8 button \"Hostile\"\n    uid=2_9 button \"Saved Items\"\n    uid=2_10 StaticText \"Reticle connected\"\n    uid=2_11 StaticText \"SESSION · DEMO\"\n  uid=2_12 banner\n    uid=2_13 StaticText \"RETICLE\"\n    uid=2_14 StaticText \"/\"\n    uid=2_15 heading \"Overview\" level=\"1\"\n    uid=2_16 StaticText \"fleet health at a glance\"\n    uid=2_17 button \"Search or jump to… ⌘K\"\n    uid=2_18 button \"Sign out\"\n    uid=2_19 StaticText \"A\"\n  uid=2_20 StaticText \"DEPLOYS TODAY\"\n  uid=2_21 StaticText \"312\"\n  uid=2_22 StaticText \"▲\"\n  uid=2_23 StaticText \" \"\n  uid=2_24 StaticText \"12.4\"\n  uid=2_25 StaticText \"%\"\n  uid=2_26 StaticText \" \"\n  uid=2_27 StaticText \"vs last week\"\n  uid=2_28 StaticText \"SUCCESS RATE\"\n  uid=2_29 StaticText \"99.2\"\n  uid=2_30 StaticText \"%\"\n  uid=2_31 StaticText \"▲\"\n  uid=2_32 StaticText \" \"\n  uid=2_33 StaticText \"0.6\"\n  uid=2_34 StaticText \"pt\"\n  uid=2_35 StaticText \" \"\n  uid=2_36 StaticText \"vs last week\"\n  uid=2_37 StaticText \"P95 LATENCY\"\n  uid=2_38 StaticText \"142\"\n  uid=2_39 StaticText \"ms\"\n  uid=2_40 StaticText \"▼\"\n  uid=2_41 StaticText \" \"\n  uid=2_42 StaticText \"8.1\"\n  uid=2_43 StaticText \"%\"\n  uid=2_44 StaticText \" \"\n  uid=2_45 StaticText \"vs last week\"\n  uid=2_46 StaticText \"TRAFFIC\"\n  uid=2_47 heading \"Requests per minute\" level=\"3\"\n  uid=2_48 StaticText \"live\"\n  uid=2_49 StaticText \"ACTIVITY\"\n  uid=2_50 StaticText \"api-gateway shipped to production · us-east-1\"\n  uid=2_51 StaticText \"2m\"\n  uid=2_52 StaticText \" ago · \"\n  uid=2_53 StaticText \"deploy\"\n  uid=2_54 StaticText \"analytics-pipeline scaled 6 → 11 replicas\"\n  uid=2_55 StaticText \"9m\"\n  uid=2_56 StaticText \" ago · \"\n  uid=2_57 StaticText \"scale\"\n  uid=2_58 StaticText \"billing-worker p95 latency above 400ms\"\n  uid=2_59 StaticText \"14m\"\n  uid=2_60 StaticText \" ago · \"\n  uid=2_61 StaticText \"alert\"\n  uid=2_62 StaticText \"web-frontend preview deployed by mara\"\n  uid=2_63 StaticText \"21m\"\n  uid=2_64 StaticText \" ago · \"\n  uid=2_65 StaticText \"deploy\"\n  uid=2_66 StaticText \"search-indexer rolled back to a31f0c9\"\n  uid=2_67 StaticText \"33m\"\n  uid=2_68 StaticText \" ago · \"\n  uid=2_69 StaticText \"rollback\"\n  uid=2_70 StaticText \"auth-service shipped to staging · eu-west-1\"\n  uid=2_71 StaticText \"41m\"\n  uid=2_72 StaticText \" ago · \"\n  uid=2_73 StaticText \"deploy\"\n  uid=1_10 button \"Start Reticle\" expandable\n",
+      "truncated": false,
+      "chars": 2694
+    },
+    "baseline_observation": {
+      "text": "## Latest page snapshot\nuid=1_0 RootWebArea \"Reticle · Mission Control\" url=\"http://localhost:4312/overview\"\n  uid=2_0 complementary\n    uid=2_1 StaticText \"Reticle\"\n    uid=2_2 StaticText \"MISSION CONTROL\"\n    uid=2_3 StaticText \"WORKSPACE\"\n    uid=2_4 button \"Overview\" focusable focused\n    uid=2_5 button \"Deployments 40\"\n    uid=2_6 button \"Compose\"\n    uid=2_7 button \"Diagnostics\"\n    uid=2_8 button \"Hostile\"\n    uid=2_9 button \"Saved Items\"\n    uid=2_10 StaticText \"Reticle connected\"\n    uid=2_11 StaticText \"SESSION · DEMO\"\n  uid=2_12 banner\n    uid=2_13 StaticText \"RETICLE\"\n    uid=2_14 StaticText \"/\"\n    uid=2_15 heading \"Overview\" level=\"1\"\n    uid=2_16 StaticText \"fleet health at a glance\"\n    uid=2_17 button \"Search or jump to… ⌘K\"\n    uid=2_18 button \"Sign out\"\n    uid=2_19 StaticText \"A\"\n  uid=2_20 StaticText \"DEPLOYS TODAY\"\n  uid=2_21 StaticText \"312\"\n  uid=2_22 StaticText \"▲\"\n  uid=2_23 StaticText \" \"\n  uid=2_24 StaticText \"12.4\"\n  uid=2_25 StaticText \"%\"\n  uid=2_26 StaticText \" \"\n  uid=2_27 StaticText \"vs last week\"\n  uid=2_28 StaticText \"SUCCESS RATE\"\n  uid=2_29 StaticText \"99.2\"\n  uid=2_30 StaticText \"%\"\n  uid=2_31 StaticText \"▲\"\n  uid=2_32 StaticText \" \"\n  uid=2_33 StaticText \"0.6\"\n  uid=2_34 StaticText \"pt\"\n  uid=2_35 StaticText \" \"\n  uid=2_36 StaticText \"vs last week\"\n  uid=2_37 StaticText \"P95 LATENCY\"\n  uid=2_38 StaticText \"142\"\n  uid=2_39 StaticText \"ms\"\n  uid=2_40 StaticText \"▼\"\n  uid=2_41 StaticText \" \"\n  uid=2_42 StaticText \"8.1\"\n  uid=2_43 StaticText \"%\"\n  uid=2_44 StaticText \" \"\n  uid=2_45 StaticText \"vs last week\"\n  uid=2_46 StaticText \"ACTIVE SERVICES\"\n  uid=2_47 StaticText \"48\"\n  uid=2_48 StaticText \"▲\"\n  uid=2_49 StaticText \" \"\n  uid=2_50 StaticText \"4.0\"\n  uid=2_51 StaticText \"%\"\n  uid=2_52 StaticText \" \"\n  uid=2_53 StaticText \"vs last week\"\n  uid=2_54 StaticText \"TRAFFIC\"\n  uid=2_55 heading \"Requests per minute\" level=\"3\"\n  uid=2_56 StaticText \"live\"\n  uid=2_57 StaticText \"ACTIVITY\"\n  uid=2_58 StaticText \"api-gateway shipped to production · us-east-1\"\n  uid=2_59 StaticText \"2m\"\n  uid=2_60 StaticText \" ago · \"\n  uid=2_61 StaticText \"deploy\"\n  uid=2_62 StaticText \"analytics-pipeline scaled 6 → 11 replicas\"\n  uid=2_63 StaticText \"9m\"\n  uid=2_64 StaticText \" ago · \"\n  uid=2_65 StaticText \"scale\"\n  uid=2_66 StaticText \"billing-worker p95 latency above 400ms\"\n  uid=2_67 StaticText \"14m\"\n  uid=2_68 StaticText \" ago · \"\n  uid=2_69 StaticText \"alert\"\n  uid=2_70 StaticText \"web-frontend preview deployed by mara\"\n  uid=2_71 StaticText \"21m\"\n  uid=2_72 StaticText \" ago · \"\n  uid=2_73 StaticText \"deploy\"\n  uid=2_74 StaticText \"search-indexer rolled back to a31f0c9\"\n  uid=2_75 StaticText \"33m\"\n  uid=2_76 StaticText \" ago · \"\n  uid=2_77 StaticText \"rollback\"\n  uid=2_78 StaticText \"auth-service shipped to staging · eu-west-1\"\n  uid=2_79 StaticText \"41m\"\n  uid=2_80 StaticText \" ago · \"\n  uid=2_81 StaticText \"deploy\"\n  uid=1_10 button \"Start Reticle\" expandable\n",
+      "truncated": false,
+      "chars": 2930
+    }
+  },
+  {
+    "scenario": "silent-dom-regression",
+    "tool": "reticle",
+    "mode": "baseline",
+    "matcher": null,
+    "expected_detect": true,
+    "detected_issue": true,
+    "calls": [
+      "reticle_act",
+      "reticle_snapshot"
+    ],
+    "observation": {
+      "text": "{\"tree\":\"- generic [grid-cols:248px 1032px]\\n  - complementary\\n    - text \\\"Reticle\\\"\\n    - text \\\"mission control\\\"\\n    - text \\\"Workspace\\\"\\n    - button \\\"Overview\\\" (ref=e16) [focused]\\n    - button \\\"Deployments40\\\" (ref=e9)\\n      - text \\\"40\\\"\\n    - button \\\"Compose\\\" (ref=e18)\\n    - button \\\"Diagnostics\\\" (ref=e19)\\n    - button \\\"Hostile\\\" (ref=e20)\\n    - button \\\"Saved Items\\\" (ref=e21)\\n    - generic \\\"Reticle agent session\\\" (ref=e22)\\n      - text \\\"Reticle connected\\\"\\n      - text \\\"session · demo\\\"\\n  - banner\\n    - text \\\"Reticle\\\"\\n    - text \\\"/\\\"\\n    - heading \\\"Overview\\\" (ref=e23)\\n    - text \\\"fleet health at a glance\\\"\\n    - button \\\"Search or jump to…⌘K\\\" (ref=e24)\\n      - text \\\"⌘K\\\"\\n    - button \\\"Sign out\\\" (ref=e25)\\n    - generic \\\"admin@reticle.dev\\\" (ref=e26) [grid-cols:34px]\\n  - generic [grid-cols:232px 232px 232px 232px]\\n    - text \\\"Deploys today\\\"\\n    - text \\\"312\\\"\\n    - text \\\"▲ 12.4%\\\"\\n      - text \\\"vs last week\\\"\\n    - text \\\"Success rate\\\"\\n    - text \\\"99.2%\\\"\\n    - text \\\"▲ 0.6pt\\\"\\n      - text \\\"vs last week\\\"\\n    - text \\\"p95 latency\\\"\\n    - text \\\"142ms\\\"\\n    - text \\\"▼ 8.1%\\\"\\n      - text \\\"vs last week\\\"\\n  - generic [grid-cols:590.766px 369.234px]\\n    - text \\\"Traffic\\\"\\n    - heading \\\"Requests per minute\\\" (ref=e27)\\n    - text \\\"live\\\"\\n    - text \\\"Activity\\\"\\n    - text \\\"api-gateway shipped to production · us-east-1\\\"\\n    - text \\\"2m ago · deploy\\\"\\n    - text \\\"analytics-pipeline scaled 6 → 11 replicas\\\"\\n    - text \\\"9m ago · scale\\\"\\n    - text \\\"billing-worker p95 latency above 400ms\\\"\\n    - text \\\"14m ago · alert\\\"\\n    - text \\\"web-frontend preview deployed by mara\\\"\\n    - text \\\"21m ago · deploy\\\"\\n    - text \\\"search-indexer rolled back to a31f0c9\\\"\\n    - text \\\"33m ago · rollback\\\"\\n    - text \\\"auth-service shipped to staging · eu-west-1\\\"\\n    - text \\\"41m ago · deploy\\\"\",\"nodes\":54,\"truncated\":false,\"status\":{\"route\":\"/overview\",\"title\":\"Reticle · Mission Control\"},\"cost\":{\"bytes\":1994,\"tokens\":499}}",
+      "truncated": false,
+      "chars": 2029
+    },
+    "baseline_observation": {
+      "text": "{\"tree\":\"- generic [grid-cols:248px 1032px]\\n  - complementary\\n    - text \\\"Reticle\\\"\\n    - text \\\"mission control\\\"\\n    - text \\\"Workspace\\\"\\n    - button \\\"Overview\\\" (ref=e17) [focused]\\n    - button \\\"Deployments40\\\" (ref=e10)\\n      - text \\\"40\\\"\\n    - button \\\"Compose\\\" (ref=e20)\\n    - button \\\"Diagnostics\\\" (ref=e21)\\n    - button \\\"Hostile\\\" (ref=e22)\\n    - button \\\"Saved Items\\\" (ref=e23)\\n    - generic \\\"Reticle agent session\\\" (ref=e24)\\n      - text \\\"Reticle connected\\\"\\n      - text \\\"session · demo\\\"\\n  - banner\\n    - text \\\"Reticle\\\"\\n    - text \\\"/\\\"\\n    - heading \\\"Overview\\\" (ref=e25)\\n    - text \\\"fleet health at a glance\\\"\\n    - button \\\"Search or jump to…⌘K\\\" (ref=e26)\\n      - text \\\"⌘K\\\"\\n    - button \\\"Sign out\\\" (ref=e27)\\n    - generic \\\"admin@reticle.dev\\\" (ref=e28) [grid-cols:34px]\\n  - generic [grid-cols:232px 232px 232px 232px]\\n    - text \\\"Deploys today\\\"\\n    - text \\\"312\\\"\\n    - text \\\"▲ 12.4%\\\"\\n      - text \\\"vs last week\\\"\\n    - text \\\"Success rate\\\"\\n    - text \\\"99.2%\\\"\\n    - text \\\"▲ 0.6pt\\\"\\n      - text \\\"vs last week\\\"\\n    - text \\\"p95 latency\\\"\\n    - text \\\"142ms\\\"\\n    - text \\\"▼ 8.1%\\\"\\n      - text \\\"vs last week\\\"\\n    - text \\\"Active services\\\"\\n    - text \\\"48\\\"\\n    - text \\\"▲ 4.0%\\\"\\n      - text \\\"vs last week\\\"\\n  - generic [grid-cols:590.766px 369.234px]\\n    - text \\\"Traffic\\\"\\n    - heading \\\"Requests per minute\\\" (ref=e29)\\n    - text \\\"live\\\"\\n    - text \\\"Activity\\\"\\n    - text \\\"api-gateway shipped to production · us-east-1\\\"\\n    - text \\\"2m ago · deploy\\\"\\n    - text \\\"analytics-pipeline scaled 6 → 11 replicas\\\"\\n    - text \\\"9m ago · scale\\\"\\n    - text \\\"billing-worker p95 latency above 400ms\\\"\\n    - text \\\"14m ago · alert\\\"\\n    - text \\\"web-frontend preview deployed by mara\\\"\\n    - text \\\"21m ago · deploy\\\"\\n    - text \\\"search-indexer rolled back to a31f0c9\\\"\\n    - text \\\"33m ago · rollback\\\"\\n    - text \\\"auth-service shipped to staging · eu-west-1\\\"\\n    - text \\\"41m ago · deploy\\\"\",\"nodes\":58,\"truncated\":false,\"status\":{\"route\":\"/overview\",\"title\":\"Reticle · Mission Control\"},\"cost\":{\"bytes\":2100,\"tokens\":525}}",
+      "truncated": false,
+      "chars": 2135
+    }
+  },
+  {
+    "scenario": "route-transition-break",
+    "tool": "playwright",
+    "mode": "absent",
+    "matcher": "Generate|Compose a script|compose-prompt",
+    "expected_detect": true,
+    "detected_issue": true,
+    "calls": [
+      "browser_click",
+      "browser_snapshot"
+    ],
+    "observation": {
+      "text": "### Page\n- Page URL: http://localhost:4312/compose\n- Page Title: Reticle · Mission Control\n- Console: 4 errors, 1 warnings\n### Snapshot\n```yaml\n- generic [ref=e1]:\n  - generic [ref=e22]:\n    - complementary [ref=e23]:\n      - generic [ref=e26]:\n        - generic [ref=e27]: Reticle\n        - generic [ref=e28]: mission control\n      - generic [ref=e29]: Workspace\n      - button \"Overview\" [ref=e30] [cursor=pointer]:\n        - img [ref=e31]\n        - text: Overview\n      - button \"Deployments 40\" [ref=e33] [cursor=pointer]:\n        - img [ref=e34]\n        - text: Deployments\n        - generic [ref=e36]: \"40\"\n      - button \"Compose\" [active] [ref=e37] [cursor=pointer]:\n        - img [ref=e38]\n        - text: Compose\n      - button \"Diagnostics\" [ref=e40] [cursor=pointer]:\n        - img [ref=e41]\n        - text: Diagnostics\n      - button \"Hostile\" [ref=e43] [cursor=pointer]:\n        - img [ref=e44]\n        - text: Hostile\n      - button \"Saved Items\" [ref=e46] [cursor=pointer]:\n        - img [ref=e47]\n        - text: Saved Items\n      - generic \"Reticle agent session\" [ref=e50]:\n        - generic [ref=e52]:\n          - generic [ref=e53]: Reticle connected\n          - generic [ref=e54]: session · demo\n    - generic [ref=e55]:\n      - banner [ref=e56]:\n        - generic [ref=e57]:\n          - generic [ref=e58]: Reticle\n          - generic [ref=e59]: /\n          - heading \"Overview\" [level=1] [ref=e60]\n          - generic [ref=e61]: fleet health at a glance\n        - button \"Search or jump to… ⌘K\" [ref=e62] [cursor=pointer]:\n          - img [ref=e63]\n          - text: Search or jump to…\n          - generic [ref=e65]: ⌘K\n        - button \"Sign out\" [ref=e66] [cursor=pointer]\n        - generic \"admin@reticle.dev\" [ref=e67]: A\n      - generic [ref=e69]:\n        - generic [ref=e70]:\n          - generic [ref=e71]:\n            - generic [ref=e72]: Deploys today\n            - generic [ref=e73]: \"312\"\n            - generic [ref=e74]: ▲ 12.4% vs last week\n            - img [ref=e76]\n          - generic [ref=e79]:\n            - generic [ref=e80]: Success rate\n            - generic [ref=e82]: 99.2%\n            - generic [ref=e83]: ▲ 0.6pt vs last week\n            - img [ref=e85]\n          - generic [ref=e88]:\n            - generic [ref=e89]: p95 latency\n            - generic [ref=e91]: 142ms\n            - generic [ref=e92]: ▼ 8.1% vs last week\n            - img [ref=e94]\n          - generic [ref=e97]:\n            - generic [ref=e98]: Active services\n            - generic [ref=e99]: \"48\"\n            - generic [ref=e100]: ▲ 4.0% vs last week\n            - img [ref=e102]\n        - generic [ref=e105]:\n          - generic [ref=e106]:\n            - generic [ref=e107]:\n              - generic [ref=e108]:\n                - generic [ref=e109]: Traffic\n                - heading \"Requests per minute\" [level=3] [ref=e110]\n              - generic [ref=e111]: live\n            - img [ref=e113]\n          - generic [ref=e116]:\n            - generic [ref=e117]: Activity\n            - generic [ref=e120]:\n              - generic [ref=e121]: api-gateway shipped to production · us-east-1\n              - generic [ref=e122]: 2m ago · deploy\n            - generic [ref=e125]:\n              - generic [ref=e126]: analytics-pipeline scaled 6 → 11 replicas\n              - generic [ref=e127]: 9m ago · scale\n            - generic [ref=e130]:\n              - generic [ref=e131]: billing-worker p95 latency above 400ms\n              - generic [ref=e132]: 14m ago · alert\n            - generic [ref=e135]:\n              - generic [ref=e136]: web-frontend preview deployed by mara\n              - generic [ref=e137]: 21m ago · deploy\n            - generic [ref=e140]:\n              - generic [ref=e141]: search-indexer rolled back to a31f0c9\n              - generic [ref=e142]: 33m ago · rollback\n            - generic [ref=e145]:\n              - generic [ref=e146]: auth-service shipped to staging · eu-west-1\n              - generic [ref=e147]: 41m ago · deploy\n  - generic:\n    - generic:\n      - text: Agent activity will appear here\n      - button \"Start Reticle\" [ref=e20]:\n        - img\n```\n### Events\n- New console entries: .playwright-mcp/console-2026-08-22T17-19-48-970Z.log#L6-L7",
+      "truncated": false,
+      "chars": 4199
+    }
+  },
+  {
+    "scenario": "route-transition-break",
+    "tool": "devtools",
+    "mode": "absent",
+    "matcher": "Generate|Compose a script|compose-prompt",
+    "expected_detect": true,
+    "detected_issue": true,
+    "calls": [
+      "click",
+      "take_snapshot"
+    ],
+    "observation": {
+      "text": "## Latest page snapshot\nuid=1_0 RootWebArea \"Reticle · Mission Control\" url=\"http://localhost:4312/compose\"\n  uid=2_0 complementary\n    uid=2_1 StaticText \"Reticle\"\n    uid=2_2 StaticText \"MISSION CONTROL\"\n    uid=2_3 StaticText \"WORKSPACE\"\n    uid=2_4 button \"Overview\"\n    uid=2_5 button \"Deployments 40\"\n    uid=2_6 button \"Compose\" focusable focused\n    uid=2_7 button \"Diagnostics\"\n    uid=2_8 button \"Hostile\"\n    uid=2_9 button \"Saved Items\"\n    uid=2_10 StaticText \"Reticle connected\"\n    uid=2_11 StaticText \"SESSION · DEMO\"\n  uid=2_12 banner\n    uid=2_13 StaticText \"RETICLE\"\n    uid=2_14 StaticText \"/\"\n    uid=2_15 heading \"Overview\" level=\"1\"\n    uid=2_16 StaticText \"fleet health at a glance\"\n    uid=2_17 button \"Search or jump to… ⌘K\"\n    uid=2_18 button \"Sign out\"\n    uid=2_19 StaticText \"A\"\n  uid=2_20 StaticText \"DEPLOYS TODAY\"\n  uid=2_21 StaticText \"312\"\n  uid=2_22 StaticText \"▲\"\n  uid=2_23 StaticText \" \"\n  uid=2_24 StaticText \"12.4\"\n  uid=2_25 StaticText \"%\"\n  uid=2_26 StaticText \" \"\n  uid=2_27 StaticText \"vs last week\"\n  uid=2_28 StaticText \"SUCCESS RATE\"\n  uid=2_29 StaticText \"99.2\"\n  uid=2_30 StaticText \"%\"\n  uid=2_31 StaticText \"▲\"\n  uid=2_32 StaticText \" \"\n  uid=2_33 StaticText \"0.6\"\n  uid=2_34 StaticText \"pt\"\n  uid=2_35 StaticText \" \"\n  uid=2_36 StaticText \"vs last week\"\n  uid=2_37 StaticText \"P95 LATENCY\"\n  uid=2_38 StaticText \"142\"\n  uid=2_39 StaticText \"ms\"\n  uid=2_40 StaticText \"▼\"\n  uid=2_41 StaticText \" \"\n  uid=2_42 StaticText \"8.1\"\n  uid=2_43 StaticText \"%\"\n  uid=2_44 StaticText \" \"\n  uid=2_45 StaticText \"vs last week\"\n  uid=2_46 StaticText \"ACTIVE SERVICES\"\n  uid=2_47 StaticText \"48\"\n  uid=2_48 StaticText \"▲\"\n  uid=2_49 StaticText \" \"\n  uid=2_50 StaticText \"4.0\"\n  uid=2_51 StaticText \"%\"\n  uid=2_52 StaticText \" \"\n  uid=2_53 StaticText \"vs last week\"\n  uid=2_54 StaticText \"TRAFFIC\"\n  uid=2_55 heading \"Requests per minute\" level=\"3\"\n  uid=2_56 StaticText \"live\"\n  uid=2_57 StaticText \"ACTIVITY\"\n  uid=2_58 StaticText \"api-gateway shipped to production · us-east-1\"\n  uid=2_59 StaticText \"2m\"\n  uid=2_60 StaticText \" ago · \"\n  uid=2_61 StaticText \"deploy\"\n  uid=2_62 StaticText \"analytics-pipeline scaled 6 → 11 replicas\"\n  uid=2_63 StaticText \"9m\"\n  uid=2_64 StaticText \" ago · \"\n  uid=2_65 StaticText \"scale\"\n  uid=2_66 StaticText \"billing-worker p95 latency above 400ms\"\n  uid=2_67 StaticText \"14m\"\n  uid=2_68 StaticText \" ago · \"\n  uid=2_69 StaticText \"alert\"\n  uid=2_70 StaticText \"web-frontend preview deployed by mara\"\n  uid=2_71 StaticText \"21m\"\n  uid=2_72 StaticText \" ago · \"\n  uid=2_73 StaticText \"deploy\"\n  uid=2_74 StaticText \"search-indexer rolled back to a31f0c9\"\n  uid=2_75 StaticText \"33m\"\n  uid=2_76 StaticText \" ago · \"\n  uid=2_77 StaticText \"rollback\"\n  uid=2_78 StaticText \"auth-service shipped to staging · eu-west-1\"\n  uid=2_79 StaticText \"41m\"\n  uid=2_80 StaticText \" ago · \"\n  uid=2_81 StaticText \"deploy\"\n  uid=1_10 button \"Start Reticle\" expandable\n",
+      "truncated": false,
+      "chars": 2929
+    }
+  },
+  {
+    "scenario": "route-transition-break",
+    "tool": "reticle",
+    "mode": "absent",
+    "matcher": "Generate|Compose a script|compose-prompt",
+    "expected_detect": true,
+    "detected_issue": true,
+    "calls": [
+      "reticle_act",
+      "reticle_snapshot"
+    ],
+    "observation": {
+      "text": "{\"tree\":\"- generic [grid-cols:248px 1032px]\\n  - complementary\\n    - text \\\"Reticle\\\"\\n    - text \\\"mission control\\\"\\n    - text \\\"Workspace\\\"\\n    - button \\\"Overview\\\" (ref=e20)\\n    - button \\\"Deployments40\\\" (ref=e10)\\n      - text \\\"40\\\"\\n    - button \\\"Compose\\\" (ref=e18) [focused]\\n    - button \\\"Diagnostics\\\" (ref=e21)\\n    - button \\\"Hostile\\\" (ref=e22)\\n    - button \\\"Saved Items\\\" (ref=e23)\\n    - generic \\\"Reticle agent session\\\" (ref=e24)\\n      - text \\\"Reticle connected\\\"\\n      - text \\\"session · demo\\\"\\n  - banner\\n    - text \\\"Reticle\\\"\\n    - text \\\"/\\\"\\n    - heading \\\"Overview\\\" (ref=e25)\\n    - text \\\"fleet health at a glance\\\"\\n    - button \\\"Search or jump to…⌘K\\\" (ref=e26)\\n      - text \\\"⌘K\\\"\\n    - button \\\"Sign out\\\" (ref=e27)\\n    - generic \\\"admin@reticle.dev\\\" (ref=e28) [grid-cols:34px]\\n  - generic [grid-cols:232px 232px 232px 232px]\\n    - text \\\"Deploys today\\\"\\n    - text \\\"312\\\"\\n    - text \\\"▲ 12.4%\\\"\\n      - text \\\"vs last week\\\"\\n    - text \\\"Success rate\\\"\\n    - text \\\"99.2%\\\"\\n    - text \\\"▲ 0.6pt\\\"\\n      - text \\\"vs last week\\\"\\n    - text \\\"p95 latency\\\"\\n    - text \\\"142ms\\\"\\n    - text \\\"▼ 8.1%\\\"\\n      - text \\\"vs last week\\\"\\n    - text \\\"Active services\\\"\\n    - text \\\"48\\\"\\n    - text \\\"▲ 4.0%\\\"\\n      - text \\\"vs last week\\\"\\n  - generic [grid-cols:590.766px 369.234px]\\n    - text \\\"Traffic\\\"\\n    - heading \\\"Requests per minute\\\" (ref=e29)\\n    - text \\\"live\\\"\\n    - text \\\"Activity\\\"\\n    - text \\\"api-gateway shipped to production · us-east-1\\\"\\n    - text \\\"2m ago · deploy\\\"\\n    - text \\\"analytics-pipeline scaled 6 → 11 replicas\\\"\\n    - text \\\"9m ago · scale\\\"\\n    - text \\\"billing-worker p95 latency above 400ms\\\"\\n    - text \\\"14m ago · alert\\\"\\n    - text \\\"web-frontend preview deployed by mara\\\"\\n    - text \\\"21m ago · deploy\\\"\\n    - text \\\"search-indexer rolled back to a31f0c9\\\"\\n    - text \\\"33m ago · rollback\\\"\\n    - text \\\"auth-service shipped to staging · eu-west-1\\\"\\n    - text \\\"41m ago · deploy\\\"\",\"nodes\":58,\"truncated\":false,\"status\":{\"route\":\"/compose\",\"title\":\"Reticle · Mission Control\"},\"cost\":{\"bytes\":2099,\"tokens\":525}}",
+      "truncated": false,
+      "chars": 2134
+    }
+  },
+  {
+    "scenario": "missing-modal",
+    "tool": "playwright",
+    "mode": "absent",
+    "matcher": "New deployment",
+    "expected_detect": true,
+    "detected_issue": true,
+    "calls": [
+      "browser_click",
+      "browser_click",
+      "browser_snapshot"
+    ],
+    "observation": {
+      "text": "### Page\n- Page URL: http://localhost:4312/deployments\n- Page Title: Reticle · Mission Control\n- Console: 4 errors, 1 warnings\n### Snapshot\n```yaml\n- generic [ref=e1]:\n  - generic [ref=e22]:\n    - complementary [ref=e23]:\n      - generic [ref=e26]:\n        - generic [ref=e27]: Reticle\n        - generic [ref=e28]: mission control\n      - generic [ref=e29]: Workspace\n      - button \"Overview\" [ref=e30] [cursor=pointer]:\n        - img [ref=e31]\n        - text: Overview\n      - button \"Deployments 40\" [ref=e33] [cursor=pointer]:\n        - img [ref=e34]\n        - text: Deployments\n        - generic [ref=e36]: \"40\"\n      - button \"Compose\" [ref=e37] [cursor=pointer]:\n        - img [ref=e38]\n        - text: Compose\n      - button \"Diagnostics\" [ref=e40] [cursor=pointer]:\n        - img [ref=e41]\n        - text: Diagnostics\n      - button \"Hostile\" [ref=e43] [cursor=pointer]:\n        - img [ref=e44]\n        - text: Hostile\n      - button \"Saved Items\" [ref=e46] [cursor=pointer]:\n        - img [ref=e47]\n        - text: Saved Items\n      - generic \"Reticle agent session\" [ref=e50]:\n        - generic [ref=e52]:\n          - generic [ref=e53]: Reticle connected\n          - generic [ref=e54]: session · demo\n    - generic [ref=e55]:\n      - banner [ref=e56]:\n        - generic [ref=e57]:\n          - generic [ref=e58]: Reticle\n          - generic [ref=e59]: /\n          - heading \"Deployments\" [level=1] [ref=e148]\n          - generic [ref=e61]: every ship, every service\n        - button \"Search or jump to… ⌘K\" [ref=e62] [cursor=pointer]:\n          - img [ref=e63]\n          - text: Search or jump to…\n          - generic [ref=e65]: ⌘K\n        - button \"Sign out\" [ref=e66] [cursor=pointer]\n        - generic \"admin@reticle.dev\" [ref=e67]: A\n      - generic [ref=e150]:\n        - generic [ref=e151]:\n          - generic [ref=e152]:\n            - img [ref=e154]\n            - textbox \"Filter by service…\" [ref=e156]\n          - button \"All environments\" [ref=e158] [cursor=pointer]:\n            - text: All environments\n            - img [ref=e159]\n          - generic [ref=e161]: 40 of 40\n          - button \"New deploy\" [active] [ref=e162] [cursor=pointer]:\n            - img [ref=e163]\n            - text: New deploy\n        - generic [ref=e165]:\n          - generic [ref=e166]: Service\n          - generic [ref=e167]: Env\n          - generic [ref=e168]: Status\n          - generic [ref=e169]: Region\n          - generic [ref=e170]: Duration\n        - generic [ref=e172]:\n          - generic [ref=e173]:\n            - generic \"Drag to reorder\" [ref=e174]:\n              - img [ref=e175]\n            - button \"api-gateway 255d7e0\" [ref=e177] [cursor=pointer]:\n              - generic [ref=e178]: api-gateway\n              - generic [ref=e179]:\n                - img [ref=e180]\n                - text: 255d7e0\n            - generic [ref=e182]: staging\n            - generic [ref=e183]: queued\n            - generic [ref=e185]: ap-south-1\n            - generic [ref=e186]: 26.5s\n            - button \"Row actions\" [ref=e187] [cursor=pointer]:\n              - img [ref=e188]\n          - generic [ref=e190]:\n            - generic \"Drag to reorder\" [ref=e191]:\n              - img [ref=e192]\n            - button \"session-store 3a9bf23\" [ref=e194] [cursor=pointer]:\n              - generic [ref=e195]: session-store\n              - generic [ref=e196]:\n                - img [ref=e197]\n                - text: 3a9bf23\n            - generic [ref=e199]: production\n            - generic [ref=e200]: live\n            - generic [ref=e202]: us-east-1\n            - generic [ref=e203]: 206.4s\n            - button \"Row actions\" [ref=e204] [cursor=pointer]:\n              - img [ref=e205]\n          - generic [ref=e207]:\n            - generic \"Drag to reorder\" [ref=e208]:\n              - img [ref=e209]\n            - button \"notification-hub 6d120f3\" [ref=e211] [cursor=pointer]:\n              - generic [ref=e212]: notification-hub\n              - generic [ref=e213]:\n                - img [ref=e214]\n                - text: 6d120f3\n            - generic [ref=e216]: preview\n            - generic [ref=e217]: live\n            - generic [ref=e219]: eu-west-1\n            - generic [ref=e220]: 130.8s\n            - button \"Row actions\" [ref=e221] [cursor=pointer]:\n              - img [ref=e222]\n          - generic [ref=e224]:\n            - generic \"Drag to reorder\" [ref=e225]:\n              - img [ref=e226]\n            - button \"webhook-relay 1b66bf9\" [ref=e228] [cursor=pointer]:\n              - generic [ref=e229]: webhook-relay\n              - generic [ref=e230]:\n                - img [ref=e231]\n                - text: 1b66bf9\n            - generic [ref=e233]: production\n            - generic [ref=e234]: building\n            - generic [ref=e236]: us-west-2\n            - generic [ref=e237]: 59.0s\n            - button \"Row actions\" [ref=e238] [cursor=pointer]:\n              - img [ref=e239]\n          - generic [ref=e241]:\n            - generic \"Drag to reorder\" [ref=e242]:\n              - img [ref=e243]\n            - button \"billing-worker a9ec2c1\" [ref=e245] [cursor=pointer]:\n              - generic [ref=e246]: billing-worker\n              - generic [ref=e247]:\n                - img [ref=e248]\n                - text: a9ec2c1\n            - generic [ref=e250]: staging\n            - generic [ref=e251]: building\n            - generic [ref=e253]: eu-west-1\n            - generic [ref=e254]: 147.7s\n            - button \"Row actions\" [ref=e255] [cursor=pointer]:\n              - img [ref=e256]\n          - generic [ref=e258]:\n            - generic \"Drag to reorder\" [ref=e259]:\n              - img [ref=e260]\n            - button \"billing-worker f27d19e\" [ref=e262] [cursor=pointer]:\n              - generic [ref=e263]: billing-worker\n              - generic [ref=e264]:\n                - img [ref=e265]\n                - text: f27d19e\n            - generic [ref=e267]: staging\n            - generic [ref=e268]: building\n            - generic [ref=e270]: us-west-2\n            - generic [re",
+      "truncated": true,
+      "chars": 10474
+    }
+  },
+  {
+    "scenario": "missing-modal",
+    "tool": "devtools",
+    "mode": "absent",
+    "matcher": "New deployment",
+    "expected_detect": true,
+    "detected_issue": true,
+    "calls": [
+      "click",
+      "click",
+      "take_snapshot"
+    ],
+    "observation": {
+      "text": "## Latest page snapshot\nuid=1_0 RootWebArea \"Reticle · Mission Control\" url=\"http://localhost:4312/deployments\"\n  uid=2_0 complementary\n    uid=2_1 StaticText \"Reticle\"\n    uid=2_2 StaticText \"MISSION CONTROL\"\n    uid=2_3 StaticText \"WORKSPACE\"\n    uid=2_4 button \"Overview\"\n    uid=2_5 button \"Deployments 40\"\n    uid=2_6 button \"Compose\"\n    uid=2_7 button \"Diagnostics\"\n    uid=2_8 button \"Hostile\"\n    uid=2_9 button \"Saved Items\"\n    uid=2_10 StaticText \"Reticle connected\"\n    uid=2_11 StaticText \"SESSION · DEMO\"\n  uid=2_12 banner\n    uid=2_13 StaticText \"RETICLE\"\n    uid=2_14 StaticText \"/\"\n    uid=2_15 heading \"Deployments\" level=\"1\"\n    uid=2_16 StaticText \"every ship, every service\"\n    uid=2_17 button \"Search or jump to… ⌘K\"\n    uid=2_18 button \"Sign out\"\n    uid=2_19 StaticText \"A\"\n  uid=3_0 textbox \"Filter by service…\"\n  uid=3_1 button \"All environments\"\n  uid=3_2 StaticText \"40\"\n  uid=3_3 StaticText \" of \"\n  uid=3_4 StaticText \"40\"\n  uid=3_5 button \"New deploy\" focusable focused\n  uid=3_6 StaticText \"SERVICE\"\n  uid=3_7 StaticText \"ENV\"\n  uid=3_8 StaticText \"STATUS\"\n  uid=3_9 StaticText \"REGION\"\n  uid=3_10 StaticText \"DURATION\"\n  uid=3_11 generic description=\"Drag to reorder\"\n  uid=3_12 button \"api-gateway 255d7e0\"\n  uid=3_13 StaticText \"staging\"\n  uid=3_14 StaticText \"queued\"\n  uid=3_15 StaticText \"ap-south-1\"\n  uid=3_16 StaticText \"26.5s\"\n  uid=3_17 button \"Row actions\"\n  uid=3_18 generic description=\"Drag to reorder\"\n  uid=3_19 button \"session-store 3a9bf23\"\n  uid=3_20 StaticText \"production\"\n  uid=3_21 StaticText \"live\"\n  uid=3_22 StaticText \"us-east-1\"\n  uid=3_23 StaticText \"206.4s\"\n  uid=3_24 button \"Row actions\"\n  uid=3_25 generic description=\"Drag to reorder\"\n  uid=3_26 button \"notification-hub 6d120f3\"\n  uid=3_27 StaticText \"preview\"\n  uid=3_28 StaticText \"live\"\n  uid=3_29 StaticText \"eu-west-1\"\n  uid=3_30 StaticText \"130.8s\"\n  uid=3_31 button \"Row actions\"\n  uid=3_32 generic description=\"Drag to reorder\"\n  uid=3_33 button \"webhook-relay 1b66bf9\"\n  uid=3_34 StaticText \"production\"\n  uid=3_35 StaticText \"building\"\n  uid=3_36 StaticText \"us-west-2\"\n  uid=3_37 StaticText \"59.0s\"\n  uid=3_38 button \"Row actions\"\n  uid=3_39 generic description=\"Drag to reorder\"\n  uid=3_40 button \"billing-worker a9ec2c1\"\n  uid=3_41 StaticText \"staging\"\n  uid=3_42 StaticText \"building\"\n  uid=3_43 StaticText \"eu-west-1\"\n  uid=3_44 StaticText \"147.7s\"\n  uid=3_45 button \"Row actions\"\n  uid=3_46 generic description=\"Drag to reorder\"\n  uid=3_47 button \"billing-worker f27d19e\"\n  uid=3_48 StaticText \"staging\"\n  uid=3_49 StaticText \"building\"\n  uid=3_50 StaticText \"us-west-2\"\n  uid=3_51 StaticText \"107.5s\"\n  uid=3_52 button \"Row actions\"\n  uid=3_53 generic description=\"Drag to reorder\"\n  uid=3_54 button \"image-proxy 56373af\"\n  uid=3_55 StaticText \"preview\"\n  uid=3_56 StaticText \"live\"\n  uid=3_57 StaticText \"us-west-2\"\n  uid=3_58 StaticText \"224.4s\"\n  uid=3_59 button \"Row actions\"\n  uid=3_60 generic description=\"Drag to reorder\"\n  uid=3_61 button \"auth-service 439fa8e\"\n  uid=3_62 StaticText \"staging\"\n  uid=3_63 StaticText \"live\"\n  uid=3_64 StaticText \"eu-central-1\"\n  uid=3_65 StaticText \"78.1s\"\n  uid=3_66 button \"Row actions\"\n  uid=3_67 generic description=\"Drag to reorder\"\n  uid=3_68 button \"billing-worker da4e5a3\"\n  uid=3_69 StaticText \"production\"\n  uid=3_70 StaticText \"live\"\n  uid=3_71 StaticText \"eu-west-1\"\n  uid=3_72 StaticText \"231.6s\"\n  uid=3_73 button \"Row actions\"\n  uid=3_74 generic description=\"Drag to reorder\"\n  uid=3_75 button \"notification-hub 740b04b\"\n  uid=3_76 StaticText \"production\"\n  uid=3_77 StaticText \"live\"\n  uid=3_78 StaticText \"us-east-1\"\n  uid=3_79 StaticText \"62.2s\"\n  uid=3_80 button \"Row actions\"\n  uid=3_81 generic description=\"Drag to reorder\"\n  uid=3_82 button \"session-store 44f9280\"\n  uid=3_83 StaticText \"staging\"\n  uid=3_84 StaticText \"queued\"\n  uid=3_85 StaticText \"ap-northeast-1\"\n  uid=3_86 StaticText \"211.1s\"\n  uid=3_87 button \"Row actions\"\n  uid=3_88 generic description=\"Drag to reorder\"\n  uid=3_89 button \"webhook-relay 1681a7a\"\n  uid=3_90 StaticText \"staging\"\n  uid=3_91 StaticText \"live\"\n  uid=3_92 StaticText \"eu-central-1\"\n  uid=3_93 StaticText \"9.5s\"\n  uid=3_94 button \"Row actions\"\n  uid=3_95 generic description=\"Drag to reorder\"\n  uid=3_96 button \"billing-worker c2ec552\"\n  uid=3_97 StaticText \"preview\"\n  uid=3_98 StaticText \"live\"\n  uid=3_99 StaticText \"ap-northeast-1\"\n  uid=3_100 StaticText \"44.8s\"\n  uid=3_101 button \"Row actions\"\n  uid=1_10 button \"Start Reticle\" expandable\n",
+      "truncated": false,
+      "chars": 4481
+    }
+  },
+  {
+    "scenario": "missing-modal",
+    "tool": "reticle",
+    "mode": "absent",
+    "matcher": "New deployment",
+    "expected_detect": true,
+    "detected_issue": true,
+    "calls": [
+      "reticle_act",
+      "reticle_act",
+      "reticle_snapshot"
+    ],
+    "observation": {
+      "text": "{\"tree\":\"- generic [grid-cols:248px 1032px]\\n  - complementary\\n    - text \\\"Reticle\\\"\\n    - text \\\"mission control\\\"\\n    - text \\\"Workspace\\\"\\n    - button \\\"Overview\\\" (ref=e19)\\n    - button \\\"Deployments40\\\" (ref=e10)\\n      - text \\\"40\\\"\\n    - button \\\"Compose\\\" (ref=e24)\\n    - button \\\"Diagnostics\\\" (ref=e25)\\n    - button \\\"Hostile\\\" (ref=e26)\\n    - button \\\"Saved Items\\\" (ref=e27)\\n    - generic \\\"Reticle agent session\\\" (ref=e28)\\n      - text \\\"Reticle connected\\\"\\n      - text \\\"session · demo\\\"\\n  - banner\\n    - text \\\"Reticle\\\"\\n    - text \\\"/\\\"\\n    - heading \\\"Deployments\\\" (ref=e20)\\n    - text \\\"every ship, every service\\\"\\n    - button \\\"Search or jump to…⌘K\\\" (ref=e29)\\n      - text \\\"⌘K\\\"\\n    - button \\\"Sign out\\\" (ref=e30)\\n    - generic \\\"admin@reticle.dev\\\" (ref=e31) [grid-cols:34px]\\n  - textbox \\\"Filter by service…\\\" (ref=e32)\\n  - button \\\"All environments\\\" (ref=e33)\\n  - text \\\"40 of 40\\\"\\n  - button \\\"New deploy\\\" (ref=e23) [focused]\\n  - generic [grid-cols:36px 231.578px 148.875px 165.422px 132.328px 115.797px 40px]\\n    - text \\\"Service\\\"\\n    - text \\\"Env\\\"\\n    - text \\\"Status\\\"\\n    - text \\\"Region\\\"\\n    - text \\\"Duration\\\"\\n  - generic [grid-cols:36px 231.578px 148.875px 165.422px 132.328px 115.797px 40px]\\n    - generic \\\"Drag to reorder\\\" (ref=e34)\\n    - button \\\"api-gateway 255d7e0\\\" (ref=e35)\\n      - text \\\"api-gateway\\\"\\n      - text \\\"255d7e0\\\"\\n    - text \\\"staging\\\"\\n    - text \\\"queued\\\"\\n    - text \\\"ap-south-1\\\"\\n    - text \\\"26.5s\\\"\\n    - button \\\"Row actions\\\" (ref=e36)\\n  - generic [grid-cols:36px 231.578px 148.875px 165.422px 132.328px 115.797px 40px]\\n    - generic \\\"Drag to reorder\\\" (ref=e37)\\n    - button \\\"session-store 3a9bf23\\\" (ref=e38)\\n      - text \\\"session-store\\\"\\n      - text \\\"3a9bf23\\\"\\n    - text \\\"production\\\"\\n    - text \\\"live\\\"\\n    - text \\\"us-east-1\\\"\\n    - text \\\"206.4s\\\"\\n    - button \\\"Row actions\\\" (ref=e39)\\n  - generic [grid-cols:36px 231.578px 148.875px 165.422px 132.328px 115.797px 40px]\\n    - generic \\\"Drag to reorder\\\" (ref=e40)\\n    - button \\\"notification-hub 6d120f3\\\" (ref=e41)\\n      - text \\\"notification-hub\\\"\\n      - text \\\"6d120f3\\\"\\n    - text \\\"preview\\\"\\n    - text \\\"live\\\"\\n    - text \\\"eu-west-1\\\"\\n    - text \\\"130.8s\\\"\\n    - button \\\"Row actions\\\" (ref=e42)\\n  - generic [grid-cols:36px 231.578px 148.875px 165.422px 132.328px 115.797px 40px]\\n    - generic \\\"Drag to reorder\\\" (ref=e43)\\n    - button \\\"webhook-relay 1b66bf9\\\" (ref=e44)\\n      - text \\\"webhook-relay\\\"\\n      - text \\\"1b66bf9\\\"\\n    - text \\\"production\\\"\\n    - text \\\"building\\\"\\n    - text \\\"us-west-2\\\"\\n    - text \\\"59.0s\\\"\\n    - button \\\"Row actions\\\" (ref=e45)\\n  - generic [grid-cols:36px 231.578px 148.875px 165.422px 132.328px 115.797px 40px]\\n    - generic \\\"Drag to reorder\\\" (ref=e46)\\n    - button \\\"billing-worker a9ec2c1\\\" (ref=e47)\\n      - text \\\"billing-worker\\\"\\n      - text \\\"a9ec2c1\\\"\\n    - text \\\"staging\\\"\\n    - text \\\"building\\\"\\n    - text \\\"eu-west-1\\\"\\n    - text \\\"147.7s\\\"\\n    - button \\\"Row actions\\\" (ref=e48)\\n  - generic [grid-cols:36px 231.578px 148.875px 165.422px 132.328px 115.797px 40px]\\n    - generic \\\"Drag to reorder\\\" (ref=e49)\\n    - button \\\"billing-worker f27d19e\\\" (ref=e50)\\n      - text \\\"billing-worker\\\"\\n      - text \\\"f27d19e\\\"\\n    - text \\\"staging\\\"\\n    - text \\\"building\\\"\\n    - text \\\"us-west-2\\\"\\n    - text \\\"107.5s\\\"\\n    - button \\\"Row actions\\\" (ref=e51)\\n  - generic [grid-cols:36px 231.578px 148.875px 165.422px 132.328px 115.797px 40px]\\n    - generic \\\"Drag to reorder\\\" (ref=e52)\\n    - button \\\"image-proxy 56373af\\\" (ref=e53)\\n      - text \\\"image-proxy\\\"\\n      - text \\\"56373af\\\"\\n    - text \\\"preview\\\"\\n    - text \\\"live\\\"\\n    - text \\\"us-west-2\\\"\\n    - text \\\"224.4s\\\"\\n    - button \\\"Row actions\\\" (ref=e54)\\n  - generic [grid-cols:36px 231.578px 148.875px 165.422px 132.328px 115.797px 40px]\\n    - generic \\\"Drag to reorder\\\" (ref=e55)\\n    - button \\\"auth-service 439fa8e\\\" (ref=e56)\\n      - text \\\"auth-service\\\"\\n      - text \\\"439fa8e\\\"\\n    - text \\\"staging\\\"\\n    - text \\\"live\\\"\\n    - text \\\"eu-central-1\\\"\\n    - text \\\"78.1s\\\"\\n    - button \\\"Row actions\\\" (ref=e57)\\n  - generic [grid-cols:36px 231.578px 148.875px 165.422px 132.328px 115.797px 40px]\\n    - generic \\\"Drag to reorder\\\" (ref=e58)\\n    - button \\\"billing-worker da4e5a3\\\" (ref=e59)\\n      - text \\\"billing-worker\\\"\\n      - text \\\"da4e5a3\\\"\\n    - text \\\"production\\\"\\n    - text \\\"live\\\"\\n    - text \\\"eu-west-1\\\"\\n    - text \\\"231.6s\\\"\\n    - button \\\"Row actions\\\" (ref=e60)\\n  - generic [grid-cols:36px 231.578px 148.875px 165.422px 132.328px 115.797px 40px]\\n    - generic \\\"Drag to reorder\\\" (ref=e61)\\n    - button \\\"notification-hub 740b04b\\\" (ref=e62)\\n      - text \\\"notification-hub\\\"\\n      - text \\\"740b04b\\\"\\n    - text \\\"production\\\"\\n    - text \\\"live\\\"\\n    - text \\\"us-east-1\\\"\\n    - text \\\"62.2s\\\"\\n    - button \\\"Row actions\\\" (ref=e63)\\n  - generic [grid-cols:36px 231.578px 148.875px 165.422px 132.328px 115.797px 40px]\\n    - generic \\\"Drag to reorder\\\" (ref=e64)\\n    - button \\\"session-store 44f9280\\\" (ref=e65)\\n      - text \\\"session-store\\\"\\n      - text \\\"44f9280\\\"\\n    - text \\\"staging\\\"\\n    - text \\\"queued\\\"\\n    - text \\\"ap-northeast-1\\\"\\n    - text \\\"211.1s\\\"\\n    - button \\\"Row actions\\\" (ref=e66)\\n  - generic [grid-cols:36px 231.578px 148.875px 165.422px 132.328px 115.797px 40px]\\n    - generic \\\"Drag to reorder\\\" (ref=e67)\\n    - button \\\"webhook-relay 1681a7a\\\" (ref=e68)\\n      - text \\\"webhook-relay\\\"\\n      - text \\\"1681a7a\\\"\\n    - text \\\"staging\\\"\\n    - text \\\"live\\\"\\n    - text \\\"eu-central-1\\\"\\n    - text \\\"9.5s\\\"\\n    - button \\\"Row actions\\\" (ref=e69)\\n  - generic [grid-cols:36px 231.578px 148.875px 165.422px 132.328px 115.797px 40px]\\n    - generic \\\"Drag to reorder\\\" (ref=e70)\\n    - button \\\"billing-worker c2ec552\\\" (ref=e71)\\n      - text \\\"billing-worker\\\"\\n      - text \\\"c2ec552\\\"\\n    - text \\\"preview\\\"\\n    - text \\\"live\\\"\\n    - text \\\"ap-northeas",
+      "truncated": true,
+      "chars": 6205
+    }
+  },
+  {
+    "scenario": "console-error-intact-ui",
+    "tool": "playwright",
+    "mode": "present",
+    "matcher": "Render crash in <ChartWidget>",
+    "expected_detect": true,
+    "detected_issue": true,
+    "calls": [
+      "browser_click",
+      "browser_click",
+      "browser_console_messages"
+    ],
+    "observation": {
+      "text": "### Result\nTotal messages: 11 (Errors: 5, Warnings: 2)\nReturning 5 messages for level \"error\"\n\n[ERROR] WebSocket connection to 'ws://localhost:4460/reticle' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4312/@fs/private/tmp/claude-501/-Users-devscript-Documents-ReticleHQ-reticle/a09c57c4-0037-4281-948d-a470b9112ef2/scratchpad/evidence/packages/browser/dist/observers/network.js:433\n[ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4312/favicon.ico:0\n[ERROR] WebSocket connection to 'ws://localhost:4460/reticle' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4312/@fs/private/tmp/claude-501/-Users-devscript-Documents-ReticleHQ-reticle/a09c57c4-0037-4281-948d-a470b9112ef2/scratchpad/evidence/packages/browser/dist/observers/network.js:433\n[ERROR] WebSocket connection to 'ws://localhost:4460/reticle' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:4312/@fs/private/tmp/claude-501/-Users-devscript-Documents-ReticleHQ-reticle/a09c57c4-0037-4281-948d-a470b9112ef2/scratchpad/evidence/packages/browser/dist/observers/network.js:433\n[ERROR] Render crash in <ChartWidget>: cannot read property \"series\" of undefined @ http://localhost:4312/@vite/client:528",
+      "truncated": false,
+      "chars": 1341
+    }
+  },
+  {
+    "scenario": "console-error-intact-ui",
+    "tool": "devtools",
+    "mode": "present",
+    "matcher": "Render crash in <ChartWidget>",
+    "expected_detect": true,
+    "detected_issue": true,
+    "calls": [
+      "click",
+      "click",
+      "list_console_messages"
+    ],
+    "observation": {
+      "text": "## Console messages\nShowing 1-2 of 2 (Page 1 of 1).\nmsgid=14 [error] Render crash in <ChartWidget>: cannot read property \"series\" of undefined (1 args)\nmsgid=15 [error] WebSocket connection to 'ws://localhost:4460/reticle' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED (0 args)",
+      "truncated": false,
+      "chars": 302
+    }
+  },
+  {
+    "scenario": "console-error-intact-ui",
+    "tool": "reticle",
+    "mode": "present",
+    "matcher": "Render crash in <ChartWidget>",
+    "expected_detect": true,
+    "detected_issue": true,
+    "calls": [
+      "reticle_act",
+      "reticle_act",
+      "reticle_console"
+    ],
+    "observation": {
+      "text": "{\"logs\":[{\"level\":\"error\",\"text\":\"Render crash in <ChartWidget>: cannot read property \\\"series\\\" of undefined\"}],\"cost\":{\"bytes\":113,\"tokens\":29}}",
+      "truncated": false,
+      "chars": 146
+    }
+  },
+  {
+    "scenario": "layout-shift",
+    "tool": "playwright",
+    "mode": "baseline",
+    "matcher": null,
+    "expected_detect": true,
+    "detected_issue": true,
+    "calls": [
+      "browser_click",
+      "browser_snapshot"
+    ],
+    "observation": {
+      "text": "### Page\n- Page URL: http://localhost:4312/overview\n- Page Title: Reticle · Mission Control\n- Console: 4 errors, 1 warnings\n### Snapshot\n```yaml\n- generic [ref=e1]:\n  - generic [ref=e22]:\n    - complementary [ref=e23]:\n      - generic [ref=e26]:\n        - generic [ref=e27]: Reticle\n        - generic [ref=e28]: mission control\n      - generic [ref=e29]: Workspace\n      - button \"Overview\" [active] [ref=e30] [cursor=pointer]:\n        - img [ref=e31]\n        - text: Overview\n      - button \"Deployments 40\" [ref=e33] [cursor=pointer]:\n        - img [ref=e34]\n        - text: Deployments\n        - generic [ref=e36]: \"40\"\n      - button \"Compose\" [ref=e37] [cursor=pointer]:\n        - img [ref=e38]\n        - text: Compose\n      - button \"Diagnostics\" [ref=e40] [cursor=pointer]:\n        - img [ref=e41]\n        - text: Diagnostics\n      - button \"Hostile\" [ref=e43] [cursor=pointer]:\n        - img [ref=e44]\n        - text: Hostile\n      - button \"Saved Items\" [ref=e46] [cursor=pointer]:\n        - img [ref=e47]\n        - text: Saved Items\n      - generic \"Reticle agent session\" [ref=e50]:\n        - generic [ref=e52]:\n          - generic [ref=e53]: Reticle connected\n          - generic [ref=e54]: session · demo\n    - generic [ref=e55]:\n      - banner [ref=e56]:\n        - generic [ref=e57]:\n          - generic [ref=e58]: Reticle\n          - generic [ref=e59]: /\n          - heading \"Overview\" [level=1] [ref=e60]\n          - generic [ref=e61]: fleet health at a glance\n        - button \"Search or jump to… ⌘K\" [ref=e62] [cursor=pointer]:\n          - img [ref=e63]\n          - text: Search or jump to…\n          - generic [ref=e65]: ⌘K\n        - button \"Sign out\" [ref=e66] [cursor=pointer]\n        - generic \"admin@reticle.dev\" [ref=e67]: A\n      - generic [ref=e69]:\n        - generic [ref=e70]:\n          - generic [ref=e71]:\n            - generic [ref=e72]: Deploys today\n            - generic [ref=e73]: \"312\"\n            - generic [ref=e74]: ▲ 12.4% vs last week\n            - img [ref=e76]\n          - generic [ref=e79]:\n            - generic [ref=e80]: Success rate\n            - generic [ref=e82]: 99.2%\n            - generic [ref=e83]: ▲ 0.6pt vs last week\n            - img [ref=e85]\n          - generic [ref=e88]:\n            - generic [ref=e89]: p95 latency\n            - generic [ref=e91]: 142ms\n            - generic [ref=e92]: ▼ 8.1% vs last week\n            - img [ref=e94]\n          - generic [ref=e97]:\n            - generic [ref=e98]: Active services\n            - generic [ref=e99]: \"48\"\n            - generic [ref=e100]: ▲ 4.0% vs last week\n            - img [ref=e102]\n        - generic [ref=e105]:\n          - generic [ref=e106]:\n            - generic [ref=e107]:\n              - generic [ref=e108]:\n                - generic [ref=e109]: Traffic\n                - heading \"Requests per minute\" [level=3] [ref=e110]\n              - generic [ref=e111]: live\n            - img [ref=e113]\n          - generic [ref=e116]:\n            - generic [ref=e117]: Activity\n            - generic [ref=e120]:\n              - generic [ref=e121]: api-gateway shipped to production · us-east-1\n              - generic [ref=e122]: 2m ago · deploy\n            - generic [ref=e125]:\n              - generic [ref=e126]: analytics-pipeline scaled 6 → 11 replicas\n              - generic [ref=e127]: 9m ago · scale\n            - generic [ref=e130]:\n              - generic [ref=e131]: billing-worker p95 latency above 400ms\n              - generic [ref=e132]: 14m ago · alert\n            - generic [ref=e135]:\n              - generic [ref=e136]: web-frontend preview deployed by mara\n              - generic [ref=e137]: 21m ago · deploy\n            - generic [ref=e140]:\n              - generic [ref=e141]: search-indexer rolled back to a31f0c9\n              - generic [ref=e142]: 33m ago · rollback\n            - generic [ref=e145]:\n              - generic [ref=e146]: auth-service shipped to staging · eu-west-1\n              - generic [ref=e147]: 41m ago · deploy\n  - generic:\n    - generic:\n      - text: Agent activity will appear here\n      - button \"Start Reticle\" [ref=e20]:\n        - img\n```",
+      "truncated": false,
+      "chars": 4107
+    },
+    "baseline_observation": {
+      "text": "### Page\n- Page URL: http://localhost:4312/overview\n- Page Title: Reticle · Mission Control\n- Console: 4 errors, 1 warnings\n### Snapshot\n```yaml\n- generic [ref=e1]:\n  - generic [ref=e22]:\n    - complementary [ref=e23]:\n      - generic [ref=e26]:\n        - generic [ref=e27]: Reticle\n        - generic [ref=e28]: mission control\n      - generic [ref=e29]: Workspace\n      - button \"Overview\" [active] [ref=e30] [cursor=pointer]:\n        - img [ref=e31]\n        - text: Overview\n      - button \"Deployments 40\" [ref=e33] [cursor=pointer]:\n        - img [ref=e34]\n        - text: Deployments\n        - generic [ref=e36]: \"40\"\n      - button \"Compose\" [ref=e37] [cursor=pointer]:\n        - img [ref=e38]\n        - text: Compose\n      - button \"Diagnostics\" [ref=e40] [cursor=pointer]:\n        - img [ref=e41]\n        - text: Diagnostics\n      - button \"Hostile\" [ref=e43] [cursor=pointer]:\n        - img [ref=e44]\n        - text: Hostile\n      - button \"Saved Items\" [ref=e46] [cursor=pointer]:\n        - img [ref=e47]\n        - text: Saved Items\n      - generic \"Reticle agent session\" [ref=e50]:\n        - generic [ref=e52]:\n          - generic [ref=e53]: Reticle connected\n          - generic [ref=e54]: session · demo\n    - generic [ref=e55]:\n      - banner [ref=e56]:\n        - generic [ref=e57]:\n          - generic [ref=e58]: Reticle\n          - generic [ref=e59]: /\n          - heading \"Overview\" [level=1] [ref=e60]\n          - generic [ref=e61]: fleet health at a glance\n        - button \"Search or jump to… ⌘K\" [ref=e62] [cursor=pointer]:\n          - img [ref=e63]\n          - text: Search or jump to…\n          - generic [ref=e65]: ⌘K\n        - button \"Sign out\" [ref=e66] [cursor=pointer]\n        - generic \"admin@reticle.dev\" [ref=e67]: A\n      - generic [ref=e69]:\n        - generic [ref=e70]:\n          - generic [ref=e71]:\n            - generic [ref=e72]: Deploys today\n            - generic [ref=e73]: \"312\"\n            - generic [ref=e74]: ▲ 12.4% vs last week\n            - img [ref=e76]\n          - generic [ref=e79]:\n            - generic [ref=e80]: Success rate\n            - generic [ref=e82]: 99.2%\n            - generic [ref=e83]: ▲ 0.6pt vs last week\n            - img [ref=e85]\n          - generic [ref=e88]:\n            - generic [ref=e89]: p95 latency\n            - generic [ref=e91]: 142ms\n            - generic [ref=e92]: ▼ 8.1% vs last week\n            - img [ref=e94]\n          - generic [ref=e97]:\n            - generic [ref=e98]: Active services\n            - generic [ref=e99]: \"48\"\n            - generic [ref=e100]: ▲ 4.0% vs last week\n            - img [ref=e102]\n        - generic [ref=e105]:\n          - generic [ref=e106]:\n            - generic [ref=e107]:\n              - generic [ref=e108]:\n                - generic [ref=e109]: Traffic\n                - heading \"Requests per minute\" [level=3] [ref=e110]\n              - generic [ref=e111]: live\n            - img [ref=e113]\n          - generic [ref=e116]:\n            - generic [ref=e117]: Activity\n            - generic [ref=e120]:\n              - generic [ref=e121]: api-gateway shipped to production · us-east-1\n              - generic [ref=e122]: 2m ago · deploy\n            - generic [ref=e125]:\n              - generic [ref=e126]: analytics-pipeline scaled 6 → 11 replicas\n              - generic [ref=e127]: 9m ago · scale\n            - generic [ref=e130]:\n              - generic [ref=e131]: billing-worker p95 latency above 400ms\n              - generic [ref=e132]: 14m ago · alert\n            - generic [ref=e135]:\n              - generic [ref=e136]: web-frontend preview deployed by mara\n              - generic [ref=e137]: 21m ago · deploy\n            - generic [ref=e140]:\n              - generic [ref=e141]: search-indexer rolled back to a31f0c9\n              - generic [ref=e142]: 33m ago · rollback\n            - generic [ref=e145]:\n              - generic [ref=e146]: auth-service shipped to staging · eu-west-1\n              - generic [ref=e147]: 41m ago · deploy\n  - generic:\n    - generic:\n      - text: Agent activity will appear here\n      - button \"Start Reticle\" [ref=e20]:\n        - img\n```\n### Events\n- New console entries: .playwright-mcp/console-2026-08-22T17-20-48-819Z.log#L6-L7",
+      "truncated": false,
+      "chars": 4200
+    }
+  },
+  {
+    "scenario": "layout-shift",
+    "tool": "devtools",
+    "mode": "baseline",
+    "matcher": null,
+    "expected_detect": true,
+    "detected_issue": false,
+    "calls": [
+      "click",
+      "take_snapshot"
+    ],
+    "observation": {
+      "text": "## Latest page snapshot\nuid=1_0 RootWebArea \"Reticle · Mission Control\" url=\"http://localhost:4312/overview\"\n  uid=2_0 complementary\n    uid=2_1 StaticText \"Reticle\"\n    uid=2_2 StaticText \"MISSION CONTROL\"\n    uid=2_3 StaticText \"WORKSPACE\"\n    uid=2_4 button \"Overview\" focusable focused\n    uid=2_5 button \"Deployments 40\"\n    uid=2_6 button \"Compose\"\n    uid=2_7 button \"Diagnostics\"\n    uid=2_8 button \"Hostile\"\n    uid=2_9 button \"Saved Items\"\n    uid=2_10 StaticText \"Reticle connected\"\n    uid=2_11 StaticText \"SESSION · DEMO\"\n  uid=2_12 banner\n    uid=2_13 StaticText \"RETICLE\"\n    uid=2_14 StaticText \"/\"\n    uid=2_15 heading \"Overview\" level=\"1\"\n    uid=2_16 StaticText \"fleet health at a glance\"\n    uid=2_17 button \"Search or jump to… ⌘K\"\n    uid=2_18 button \"Sign out\"\n    uid=2_19 StaticText \"A\"\n  uid=2_20 StaticText \"DEPLOYS TODAY\"\n  uid=2_21 StaticText \"312\"\n  uid=2_22 StaticText \"▲\"\n  uid=2_23 StaticText \" \"\n  uid=2_24 StaticText \"12.4\"\n  uid=2_25 StaticText \"%\"\n  uid=2_26 StaticText \" \"\n  uid=2_27 StaticText \"vs last week\"\n  uid=2_28 StaticText \"SUCCESS RATE\"\n  uid=2_29 StaticText \"99.2\"\n  uid=2_30 StaticText \"%\"\n  uid=2_31 StaticText \"▲\"\n  uid=2_32 StaticText \" \"\n  uid=2_33 StaticText \"0.6\"\n  uid=2_34 StaticText \"pt\"\n  uid=2_35 StaticText \" \"\n  uid=2_36 StaticText \"vs last week\"\n  uid=2_37 StaticText \"P95 LATENCY\"\n  uid=2_38 StaticText \"142\"\n  uid=2_39 StaticText \"ms\"\n  uid=2_40 StaticText \"▼\"\n  uid=2_41 StaticText \" \"\n  uid=2_42 StaticText \"8.1\"\n  uid=2_43 StaticText \"%\"\n  uid=2_44 StaticText \" \"\n  uid=2_45 StaticText \"vs last week\"\n  uid=2_46 StaticText \"ACTIVE SERVICES\"\n  uid=2_47 StaticText \"48\"\n  uid=2_48 StaticText \"▲\"\n  uid=2_49 StaticText \" \"\n  uid=2_50 StaticText \"4.0\"\n  uid=2_51 StaticText \"%\"\n  uid=2_52 StaticText \" \"\n  uid=2_53 StaticText \"vs last week\"\n  uid=2_54 StaticText \"TRAFFIC\"\n  uid=2_55 heading \"Requests per minute\" level=\"3\"\n  uid=2_56 StaticText \"live\"\n  uid=2_57 StaticText \"ACTIVITY\"\n  uid=2_58 StaticText \"api-gateway shipped to production · us-east-1\"\n  uid=2_59 StaticText \"2m\"\n  uid=2_60 StaticText \" ago · \"\n  uid=2_61 StaticText \"deploy\"\n  uid=2_62 StaticText \"analytics-pipeline scaled 6 → 11 replicas\"\n  uid=2_63 StaticText \"9m\"\n  uid=2_64 StaticText \" ago · \"\n  uid=2_65 StaticText \"scale\"\n  uid=2_66 StaticText \"billing-worker p95 latency above 400ms\"\n  uid=2_67 StaticText \"14m\"\n  uid=2_68 StaticText \" ago · \"\n  uid=2_69 StaticText \"alert\"\n  uid=2_70 StaticText \"web-frontend preview deployed by mara\"\n  uid=2_71 StaticText \"21m\"\n  uid=2_72 StaticText \" ago · \"\n  uid=2_73 StaticText \"deploy\"\n  uid=2_74 StaticText \"search-indexer rolled back to a31f0c9\"\n  uid=2_75 StaticText \"33m\"\n  uid=2_76 StaticText \" ago · \"\n  uid=2_77 StaticText \"rollback\"\n  uid=2_78 StaticText \"auth-service shipped to staging · eu-west-1\"\n  uid=2_79 StaticText \"41m\"\n  uid=2_80 StaticText \" ago · \"\n  uid=2_81 StaticText \"deploy\"\n  uid=1_10 button \"Start Reticle\" expandable\n",
+      "truncated": false,
+      "chars": 2930
+    },
+    "baseline_observation": {
+      "text": "## Latest page snapshot\nuid=1_0 RootWebArea \"Reticle · Mission Control\" url=\"http://localhost:4312/overview\"\n  uid=2_0 complementary\n    uid=2_1 StaticText \"Reticle\"\n    uid=2_2 StaticText \"MISSION CONTROL\"\n    uid=2_3 StaticText \"WORKSPACE\"\n    uid=2_4 button \"Overview\" focusable focused\n    uid=2_5 button \"Deployments 40\"\n    uid=2_6 button \"Compose\"\n    uid=2_7 button \"Diagnostics\"\n    uid=2_8 button \"Hostile\"\n    uid=2_9 button \"Saved Items\"\n    uid=2_10 StaticText \"Reticle connected\"\n    uid=2_11 StaticText \"SESSION · DEMO\"\n  uid=2_12 banner\n    uid=2_13 StaticText \"RETICLE\"\n    uid=2_14 StaticText \"/\"\n    uid=2_15 heading \"Overview\" level=\"1\"\n    uid=2_16 StaticText \"fleet health at a glance\"\n    uid=2_17 button \"Search or jump to… ⌘K\"\n    uid=2_18 button \"Sign out\"\n    uid=2_19 StaticText \"A\"\n  uid=2_20 StaticText \"DEPLOYS TODAY\"\n  uid=2_21 StaticText \"312\"\n  uid=2_22 StaticText \"▲\"\n  uid=2_23 StaticText \" \"\n  uid=2_24 StaticText \"12.4\"\n  uid=2_25 StaticText \"%\"\n  uid=2_26 StaticText \" \"\n  uid=2_27 StaticText \"vs last week\"\n  uid=2_28 StaticText \"SUCCESS RATE\"\n  uid=2_29 StaticText \"99.2\"\n  uid=2_30 StaticText \"%\"\n  uid=2_31 StaticText \"▲\"\n  uid=2_32 StaticText \" \"\n  uid=2_33 StaticText \"0.6\"\n  uid=2_34 StaticText \"pt\"\n  uid=2_35 StaticText \" \"\n  uid=2_36 StaticText \"vs last week\"\n  uid=2_37 StaticText \"P95 LATENCY\"\n  uid=2_38 StaticText \"142\"\n  uid=2_39 StaticText \"ms\"\n  uid=2_40 StaticText \"▼\"\n  uid=2_41 StaticText \" \"\n  uid=2_42 StaticText \"8.1\"\n  uid=2_43 StaticText \"%\"\n  uid=2_44 StaticText \" \"\n  uid=2_45 StaticText \"vs last week\"\n  uid=2_46 StaticText \"ACTIVE SERVICES\"\n  uid=2_47 StaticText \"48\"\n  uid=2_48 StaticText \"▲\"\n  uid=2_49 StaticText \" \"\n  uid=2_50 StaticText \"4.0\"\n  uid=2_51 StaticText \"%\"\n  uid=2_52 StaticText \" \"\n  uid=2_53 StaticText \"vs last week\"\n  uid=2_54 StaticText \"TRAFFIC\"\n  uid=2_55 heading \"Requests per minute\" level=\"3\"\n  uid=2_56 StaticText \"live\"\n  uid=2_57 StaticText \"ACTIVITY\"\n  uid=2_58 StaticText \"api-gateway shipped to production · us-east-1\"\n  uid=2_59 StaticText \"2m\"\n  uid=2_60 StaticText \" ago · \"\n  uid=2_61 StaticText \"deploy\"\n  uid=2_62 StaticText \"analytics-pipeline scaled 6 → 11 replicas\"\n  uid=2_63 StaticText \"9m\"\n  uid=2_64 StaticText \" ago · \"\n  uid=2_65 StaticText \"scale\"\n  uid=2_66 StaticText \"billing-worker p95 latency above 400ms\"\n  uid=2_67 StaticText \"14m\"\n  uid=2_68 StaticText \" ago · \"\n  uid=2_69 StaticText \"alert\"\n  uid=2_70 StaticText \"web-frontend preview deployed by mara\"\n  uid=2_71 StaticText \"21m\"\n  uid=2_72 StaticText \" ago · \"\n  uid=2_73 StaticText \"deploy\"\n  uid=2_74 StaticText \"search-indexer rolled back to a31f0c9\"\n  uid=2_75 StaticText \"33m\"\n  uid=2_76 StaticText \" ago · \"\n  uid=2_77 StaticText \"rollback\"\n  uid=2_78 StaticText \"auth-service shipped to staging · eu-west-1\"\n  uid=2_79 StaticText \"41m\"\n  uid=2_80 StaticText \" ago · \"\n  uid=2_81 StaticText \"deploy\"\n  uid=1_10 button \"Start Reticle\" expandable\n",
+      "truncated": false,
+      "chars": 2930
+    }
+  },
+  {
+    "scenario": "layout-shift",
+    "tool": "reticle",
+    "mode": "baseline",
+    "matcher": null,
+    "expected_detect": true,
+    "detected_issue": true,
+    "calls": [
+      "reticle_act",
+      "reticle_snapshot"
+    ],
+    "observation": {
+      "text": "{\"tree\":\"- generic [grid-cols:248px 1032px]\\n  - complementary\\n    - text \\\"Reticle\\\"\\n    - text \\\"mission control\\\"\\n    - text \\\"Workspace\\\"\\n    - button \\\"Overview\\\" (ref=e18) [focused]\\n    - button \\\"Deployments40\\\" (ref=e6)\\n      - text \\\"40\\\"\\n    - button \\\"Compose\\\" (ref=e20)\\n    - button \\\"Diagnostics\\\" (ref=e21)\\n    - button \\\"Hostile\\\" (ref=e22)\\n    - button \\\"Saved Items\\\" (ref=e23)\\n    - generic \\\"Reticle agent session\\\" (ref=e24)\\n      - text \\\"Reticle connected\\\"\\n      - text \\\"session · demo\\\"\\n  - banner\\n    - text \\\"Reticle\\\"\\n    - text \\\"/\\\"\\n    - heading \\\"Overview\\\" (ref=e25)\\n    - text \\\"fleet health at a glance\\\"\\n    - button \\\"Search or jump to…⌘K\\\" (ref=e26)\\n      - text \\\"⌘K\\\"\\n    - button \\\"Sign out\\\" (ref=e27)\\n    - generic \\\"admin@reticle.dev\\\" (ref=e28) [grid-cols:34px]\\n  - generic [grid-cols:232px 232px 232px 232px]\\n    - text \\\"Deploys today\\\"\\n    - text \\\"312\\\"\\n    - text \\\"▲ 12.4%\\\"\\n      - text \\\"vs last week\\\"\\n    - text \\\"Success rate\\\"\\n    - text \\\"99.2%\\\"\\n    - text \\\"▲ 0.6pt\\\"\\n      - text \\\"vs last week\\\"\\n    - text \\\"p95 latency\\\"\\n    - text \\\"142ms\\\"\\n    - text \\\"▼ 8.1%\\\"\\n      - text \\\"vs last week\\\"\\n    - text \\\"Active services\\\"\\n    - text \\\"48\\\"\\n    - text \\\"▲ 4.0%\\\"\\n      - text \\\"vs last week\\\"\\n  - generic [grid-cols:314.656px 314.672px 314.656px]\\n    - text \\\"Traffic\\\"\\n    - heading \\\"Requests per minute\\\" (ref=e29)\\n    - text \\\"live\\\"\\n    - text \\\"Activity\\\"\\n    - text \\\"api-gateway shipped to production · us-east-1\\\"\\n    - text \\\"2m ago · deploy\\\"\\n    - text \\\"analytics-pipeline scaled 6 → 11 replicas\\\"\\n    - text \\\"9m ago · scale\\\"\\n    - text \\\"billing-worker p95 latency above 400ms\\\"\\n    - text \\\"14m ago · alert\\\"\\n    - text \\\"web-frontend preview deployed by mara\\\"\\n    - text \\\"21m ago · deploy\\\"\\n    - text \\\"search-indexer rolled back to a31f0c9\\\"\\n    - text \\\"33m ago · rollback\\\"\\n    - text \\\"auth-service shipped to staging · eu-west-1\\\"\\n    - text \\\"41m ago · deploy\\\"\",\"nodes\":58,\"truncated\":false,\"status\":{\"route\":\"/overview\",\"title\":\"Reticle · Mission Control\"},\"cost\":{\"bytes\":2109,\"tokens\":528}}",
+      "truncated": false,
+      "chars": 2144
+    },
+    "baseline_observation": {
+      "text": "{\"tree\":\"- generic [grid-cols:248px 1032px]\\n  - complementary\\n    - text \\\"Reticle\\\"\\n    - text \\\"mission control\\\"\\n    - text \\\"Workspace\\\"\\n    - button \\\"Overview\\\" (ref=e18) [focused]\\n    - button \\\"Deployments40\\\" (ref=e6)\\n      - text \\\"40\\\"\\n    - button \\\"Compose\\\" (ref=e20)\\n    - button \\\"Diagnostics\\\" (ref=e21)\\n    - button \\\"Hostile\\\" (ref=e22)\\n    - button \\\"Saved Items\\\" (ref=e23)\\n    - generic \\\"Reticle agent session\\\" (ref=e24)\\n      - text \\\"Reticle connected\\\"\\n      - text \\\"session · demo\\\"\\n  - banner\\n    - text \\\"Reticle\\\"\\n    - text \\\"/\\\"\\n    - heading \\\"Overview\\\" (ref=e25)\\n    - text \\\"fleet health at a glance\\\"\\n    - button \\\"Search or jump to…⌘K\\\" (ref=e26)\\n      - text \\\"⌘K\\\"\\n    - button \\\"Sign out\\\" (ref=e27)\\n    - generic \\\"admin@reticle.dev\\\" (ref=e28) [grid-cols:34px]\\n  - generic [grid-cols:232px 232px 232px 232px]\\n    - text \\\"Deploys today\\\"\\n    - text \\\"312\\\"\\n    - text \\\"▲ 12.4%\\\"\\n      - text \\\"vs last week\\\"\\n    - text \\\"Success rate\\\"\\n    - text \\\"99.2%\\\"\\n    - text \\\"▲ 0.6pt\\\"\\n      - text \\\"vs last week\\\"\\n    - text \\\"p95 latency\\\"\\n    - text \\\"142ms\\\"\\n    - text \\\"▼ 8.1%\\\"\\n      - text \\\"vs last week\\\"\\n    - text \\\"Active services\\\"\\n    - text \\\"48\\\"\\n    - text \\\"▲ 4.0%\\\"\\n      - text \\\"vs last week\\\"\\n  - generic [grid-cols:590.766px 369.234px]\\n    - text \\\"Traffic\\\"\\n    - heading \\\"Requests per minute\\\" (ref=e29)\\n    - text \\\"live\\\"\\n    - text \\\"Activity\\\"\\n    - text \\\"api-gateway shipped to production · us-east-1\\\"\\n    - text \\\"2m ago · deploy\\\"\\n    - text \\\"analytics-pipeline scaled 6 → 11 replicas\\\"\\n    - text \\\"9m ago · scale\\\"\\n    - text \\\"billing-worker p95 latency above 400ms\\\"\\n    - text \\\"14m ago · alert\\\"\\n    - text \\\"web-frontend preview deployed by mara\\\"\\n    - text \\\"21m ago · deploy\\\"\\n    - text \\\"search-indexer rolled back to a31f0c9\\\"\\n    - text \\\"33m ago · rollback\\\"\\n    - text \\\"auth-service shipped to staging · eu-west-1\\\"\\n    - text \\\"41m ago · deploy\\\"\",\"nodes\":58,\"truncated\":false,\"status\":{\"route\":\"/overview\",\"title\":\"Reticle · Mission Control\"},\"cost\":{\"bytes\":2099,\"tokens\":525}}",
+      "truncated": false,
+      "chars": 2134
+    }
+  },
+  {
+    "scenario": "broken-form-validation",
+    "tool": "playwright",
+    "mode": "absent",
+    "matcher": "New deployment",
+    "expected_detect": true,
+    "detected_issue": true,
+    "calls": [
+      "browser_click",
+      "browser_click",
+      "browser_click",
+      "browser_snapshot"
+    ],
+    "observation": {
+      "text": "### Page\n- Page URL: http://localhost:4312/deployments\n- Page Title: Reticle · Mission Control\n- Console: 4 errors, 1 warnings\n### Snapshot\n```yaml\n- generic [active] [ref=e1]:\n  - generic [ref=e22]:\n    - complementary [ref=e23]:\n      - generic [ref=e26]:\n        - generic [ref=e27]: Reticle\n        - generic [ref=e28]: mission control\n      - generic [ref=e29]: Workspace\n      - button \"Overview\" [ref=e30] [cursor=pointer]:\n        - img [ref=e31]\n        - text: Overview\n      - button \"Deployments 41\" [ref=e417] [cursor=pointer]:\n        - img [ref=e34]\n        - text: Deployments\n        - generic [ref=e36]: \"41\"\n      - button \"Compose\" [ref=e37] [cursor=pointer]:\n        - img [ref=e38]\n        - text: Compose\n      - button \"Diagnostics\" [ref=e40] [cursor=pointer]:\n        - img [ref=e41]\n        - text: Diagnostics\n      - button \"Hostile\" [ref=e43] [cursor=pointer]:\n        - img [ref=e44]\n        - text: Hostile\n      - button \"Saved Items\" [ref=e46] [cursor=pointer]:\n        - img [ref=e47]\n        - text: Saved Items\n      - generic \"Reticle agent session\" [ref=e50]:\n        - generic [ref=e52]:\n          - generic [ref=e53]: Reticle connected\n          - generic [ref=e54]: session · demo\n    - generic [ref=e55]:\n      - banner [ref=e56]:\n        - generic [ref=e57]:\n          - generic [ref=e58]: Reticle\n          - generic [ref=e59]: /\n          - heading \"Deployments\" [level=1] [ref=e148]\n          - generic [ref=e61]: every ship, every service\n        - button \"Search or jump to… ⌘K\" [ref=e62] [cursor=pointer]:\n          - img [ref=e63]\n          - text: Search or jump to…\n          - generic [ref=e65]: ⌘K\n        - button \"Sign out\" [ref=e66] [cursor=pointer]\n        - generic \"admin@reticle.dev\" [ref=e67]: A\n      - generic [ref=e150]:\n        - generic [ref=e151]:\n          - generic [ref=e152]:\n            - img [ref=e154]\n            - textbox \"Filter by service…\" [ref=e156]\n          - button \"All environments\" [ref=e158] [cursor=pointer]:\n            - text: All environments\n            - img [ref=e159]\n          - generic [ref=e161]: 41 of 41\n          - button \"New deploy\" [ref=e162] [cursor=pointer]:\n            - img [ref=e163]\n            - text: New deploy\n        - generic [ref=e165]:\n          - generic [ref=e166]: Service\n          - generic [ref=e167]: Env\n          - generic [ref=e168]: Status\n          - generic [ref=e169]: Region\n          - generic [ref=e170]: Duration\n        - generic [ref=e172]:\n          - generic [ref=e418]:\n            - generic \"Drag to reorder\" [ref=e419]:\n              - img [ref=e420]\n            - button \"2328\" [ref=e422] [cursor=pointer]:\n              - generic [ref=e423]:\n                - img [ref=e424]\n                - text: \"2328\"\n            - generic [ref=e426]: staging\n            - generic [ref=e427]: building\n            - generic [ref=e429]: us-east-1\n            - generic [ref=e430]: —\n            - button \"Row actions\" [ref=e431] [cursor=pointer]:\n              - img [ref=e432]\n          - generic [ref=e173]:\n            - generic \"Drag to reorder\" [ref=e174]:\n              - img [ref=e175]\n            - button \"api-gateway 255d7e0\" [ref=e177] [cursor=pointer]:\n              - generic [ref=e178]: api-gateway\n              - generic [ref=e179]:\n                - img [ref=e180]\n                - text: 255d7e0\n            - generic [ref=e182]: staging\n            - generic [ref=e183]: queued\n            - generic [ref=e185]: ap-south-1\n            - generic [ref=e186]: 26.5s\n            - button \"Row actions\" [ref=e187] [cursor=pointer]:\n              - img [ref=e188]\n          - generic [ref=e190]:\n            - generic \"Drag to reorder\" [ref=e191]:\n              - img [ref=e192]\n            - button \"session-store 3a9bf23\" [ref=e194] [cursor=pointer]:\n              - generic [ref=e195]: session-store\n              - generic [ref=e196]:\n                - img [ref=e197]\n                - text: 3a9bf23\n            - generic [ref=e199]: production\n            - generic [ref=e200]: live\n            - generic [ref=e202]: us-east-1\n            - generic [ref=e203]: 206.4s\n            - button \"Row actions\" [ref=e204] [cursor=pointer]:\n              - img [ref=e205]\n          - generic [ref=e207]:\n            - generic \"Drag to reorder\" [ref=e208]:\n              - img [ref=e209]\n            - button \"notification-hub 6d120f3\" [ref=e211] [cursor=pointer]:\n              - generic [ref=e212]: notification-hub\n              - generic [ref=e213]:\n                - img [ref=e214]\n                - text: 6d120f3\n            - generic [ref=e216]: preview\n            - generic [ref=e217]: live\n            - generic [ref=e219]: eu-west-1\n            - generic [ref=e220]: 130.8s\n            - button \"Row actions\" [ref=e221] [cursor=pointer]:\n              - img [ref=e222]\n          - generic [ref=e224]:\n            - generic \"Drag to reorder\" [ref=e225]:\n              - img [ref=e226]\n            - button \"webhook-relay 1b66bf9\" [ref=e228] [cursor=pointer]:\n              - generic [ref=e229]: webhook-relay\n              - generic [ref=e230]:\n                - img [ref=e231]\n                - text: 1b66bf9\n            - generic [ref=e233]: production\n            - generic [ref=e234]: building\n            - generic [ref=e236]: us-west-2\n            - generic [ref=e237]: 59.0s\n            - button \"Row actions\" [ref=e238] [cursor=pointer]:\n              - img [ref=e239]\n          - generic [ref=e241]:\n            - generic \"Drag to reorder\" [ref=e242]:\n              - img [ref=e243]\n            - button \"billing-worker a9ec2c1\" [ref=e245] [cursor=pointer]:\n              - generic [ref=e246]: billing-worker\n              - generic [ref=e247]:\n                - img [ref=e248]\n                - text: a9ec2c1\n            - generic [ref=e250]: staging\n            - generic [ref=e251]: building\n            - generic [ref=e253]: eu-west-1\n            - generic [ref=e254]: 147.7s\n            - button \"Row actions\" [ref=e255] [cursor=poin",
+      "truncated": true,
+      "chars": 10643
+    }
+  },
+  {
+    "scenario": "broken-form-validation",
+    "tool": "devtools",
+    "mode": "absent",
+    "matcher": "New deployment",
+    "expected_detect": true,
+    "detected_issue": false,
+    "calls": [
+      "click",
+      "click",
+      "click",
+      "take_snapshot"
+    ],
+    "observation": {
+      "text": "## Latest page snapshot\nuid=1_0 RootWebArea \"Reticle · Mission Control\" url=\"http://localhost:4312/deployments\"\n  uid=2_0 complementary\n    uid=2_1 StaticText \"Reticle\"\n    uid=2_2 StaticText \"MISSION CONTROL\"\n    uid=2_3 StaticText \"WORKSPACE\"\n    uid=2_4 button \"Overview\"\n    uid=2_5 button \"Deployments 40\" focusable focused\n    uid=2_6 button \"Compose\"\n    uid=2_7 button \"Diagnostics\"\n    uid=2_8 button \"Hostile\"\n    uid=2_9 button \"Saved Items\"\n    uid=2_10 StaticText \"Reticle connected\"\n    uid=2_11 StaticText \"SESSION · DEMO\"\n  uid=2_12 banner\n    uid=2_13 StaticText \"RETICLE\"\n    uid=2_14 StaticText \"/\"\n    uid=2_15 heading \"Deployments\" level=\"1\"\n    uid=2_16 StaticText \"every ship, every service\"\n    uid=2_17 button \"Search or jump to… ⌘K\"\n    uid=2_18 button \"Sign out\"\n    uid=2_19 StaticText \"A\"\n  uid=3_0 textbox \"Filter by service…\"\n  uid=3_1 button \"All environments\"\n  uid=3_2 StaticText \"40\"\n  uid=3_3 StaticText \" of \"\n  uid=3_4 StaticText \"40\"\n  uid=3_5 button \"New deploy\"\n  uid=3_6 StaticText \"SERVICE\"\n  uid=3_7 StaticText \"ENV\"\n  uid=3_8 StaticText \"STATUS\"\n  uid=3_9 StaticText \"REGION\"\n  uid=3_10 StaticText \"DURATION\"\n  uid=3_11 generic description=\"Drag to reorder\"\n  uid=3_12 button \"api-gateway 255d7e0\"\n  uid=3_13 StaticText \"staging\"\n  uid=3_14 StaticText \"queued\"\n  uid=3_15 StaticText \"ap-south-1\"\n  uid=3_16 StaticText \"26.5s\"\n  uid=3_17 button \"Row actions\"\n  uid=3_18 generic description=\"Drag to reorder\"\n  uid=3_19 button \"session-store 3a9bf23\"\n  uid=3_20 StaticText \"production\"\n  uid=3_21 StaticText \"live\"\n  uid=3_22 StaticText \"us-east-1\"\n  uid=3_23 StaticText \"206.4s\"\n  uid=3_24 button \"Row actions\"\n  uid=3_25 generic description=\"Drag to reorder\"\n  uid=3_26 button \"notification-hub 6d120f3\"\n  uid=3_27 StaticText \"preview\"\n  uid=3_28 StaticText \"live\"\n  uid=3_29 StaticText \"eu-west-1\"\n  uid=3_30 StaticText \"130.8s\"\n  uid=3_31 button \"Row actions\"\n  uid=3_32 generic description=\"Drag to reorder\"\n  uid=3_33 button \"webhook-relay 1b66bf9\"\n  uid=3_34 StaticText \"production\"\n  uid=3_35 StaticText \"building\"\n  uid=3_36 StaticText \"us-west-2\"\n  uid=3_37 StaticText \"59.0s\"\n  uid=3_38 button \"Row actions\"\n  uid=3_39 generic description=\"Drag to reorder\"\n  uid=3_40 button \"billing-worker a9ec2c1\"\n  uid=3_41 StaticText \"staging\"\n  uid=3_42 StaticText \"building\"\n  uid=3_43 StaticText \"eu-west-1\"\n  uid=3_44 StaticText \"147.7s\"\n  uid=3_45 button \"Row actions\"\n  uid=3_46 generic description=\"Drag to reorder\"\n  uid=3_47 button \"billing-worker f27d19e\"\n  uid=3_48 StaticText \"staging\"\n  uid=3_49 StaticText \"building\"\n  uid=3_50 StaticText \"us-west-2\"\n  uid=3_51 StaticText \"107.5s\"\n  uid=3_52 button \"Row actions\"\n  uid=3_53 generic description=\"Drag to reorder\"\n  uid=3_54 button \"image-proxy 56373af\"\n  uid=3_55 StaticText \"preview\"\n  uid=3_56 StaticText \"live\"\n  uid=3_57 StaticText \"us-west-2\"\n  uid=3_58 StaticText \"224.4s\"\n  uid=3_59 button \"Row actions\"\n  uid=3_60 generic description=\"Drag to reorder\"\n  uid=3_61 button \"auth-service 439fa8e\"\n  uid=3_62 StaticText \"staging\"\n  uid=3_63 StaticText \"live\"\n  uid=3_64 StaticText \"eu-central-1\"\n  uid=3_65 StaticText \"78.1s\"\n  uid=3_66 button \"Row actions\"\n  uid=3_67 generic description=\"Drag to reorder\"\n  uid=3_68 button \"billing-worker da4e5a3\"\n  uid=3_69 StaticText \"production\"\n  uid=3_70 StaticText \"live\"\n  uid=3_71 StaticText \"eu-west-1\"\n  uid=3_72 StaticText \"231.6s\"\n  uid=3_73 button \"Row actions\"\n  uid=3_74 generic description=\"Drag to reorder\"\n  uid=3_75 button \"notification-hub 740b04b\"\n  uid=3_76 StaticText \"production\"\n  uid=3_77 StaticText \"live\"\n  uid=3_78 StaticText \"us-east-1\"\n  uid=3_79 StaticText \"62.2s\"\n  uid=3_80 button \"Row actions\"\n  uid=3_81 generic description=\"Drag to reorder\"\n  uid=3_82 button \"session-store 44f9280\"\n  uid=3_83 StaticText \"staging\"\n  uid=3_84 StaticText \"queued\"\n  uid=3_85 StaticText \"ap-northeast-1\"\n  uid=3_86 StaticText \"211.1s\"\n  uid=3_87 button \"Row actions\"\n  uid=3_88 generic description=\"Drag to reorder\"\n  uid=3_89 button \"webhook-relay 1681a7a\"\n  uid=3_90 StaticText \"staging\"\n  uid=3_91 StaticText \"live\"\n  uid=3_92 StaticText \"eu-central-1\"\n  uid=3_93 StaticText \"9.5s\"\n  uid=3_94 button \"Row actions\"\n  uid=3_95 generic description=\"Drag to reorder\"\n  uid=3_96 button \"billing-worker c2ec552\"\n  uid=3_97 StaticText \"preview\"\n  uid=3_98 StaticText \"live\"\n  uid=3_99 StaticText \"ap-northeast-1\"\n  uid=3_100 StaticText \"44.8s\"\n  uid=3_101 button \"Row actions\"\n  uid=4_0 heading \"New deployment\" level=\"3\"\n  uid=4_1 button \"Close\"\n  uid=4_2 StaticText \"Service\"\n  uid=4_3 textbox \"Service\"\n  uid=4_4 StaticText \"Environment\"\n  uid=4_5 button \"production\"\n  uid=4_6 button \"staging\"\n  uid=4_7 button \"preview\"\n  uid=4_8 button \"Cancel\"\n  uid=4_9 button \"Deploy\"\n  uid=1_10 button \"Start Reticle\" expandable\n",
+      "truncated": false,
+      "chars": 4781
+    }
+  },
+  {
+    "scenario": "broken-form-validation",
+    "tool": "reticle",
+    "mode": "absent",
+    "matcher": "New deployment",
+    "expected_detect": true,
+    "detected_issue": true,
+    "calls": [
+      "reticle_act",
+      "reticle_act",
+      "reticle_act",
+      "reticle_snapshot"
+    ],
+    "observation": {
+      "text": "{\"tree\":\"- generic [grid-cols:248px 1032px]\\n  - complementary\\n    - text \\\"Reticle\\\"\\n    - text \\\"mission control\\\"\\n    - text \\\"Workspace\\\"\\n    - button \\\"Overview\\\" (ref=e19)\\n    - button \\\"Deployments41\\\" (ref=e6)\\n      - text \\\"41\\\"\\n    - button \\\"Compose\\\" (ref=e44)\\n    - button \\\"Diagnostics\\\" (ref=e45)\\n    - button \\\"Hostile\\\" (ref=e46)\\n    - button \\\"Saved Items\\\" (ref=e47)\\n    - generic \\\"Reticle agent session\\\" (ref=e48)\\n      - text \\\"Reticle connected\\\"\\n      - text \\\"session · demo\\\"\\n  - banner\\n    - text \\\"Reticle\\\"\\n    - text \\\"/\\\"\\n    - heading \\\"Deployments\\\" (ref=e20)\\n    - text \\\"every ship, every service\\\"\\n    - button \\\"Search or jump to…⌘K\\\" (ref=e49)\\n      - text \\\"⌘K\\\"\\n    - button \\\"Sign out\\\" (ref=e50)\\n    - generic \\\"admin@reticle.dev\\\" (ref=e51) [grid-cols:34px]\\n  - textbox \\\"Filter by service…\\\" (ref=e52)\\n  - button \\\"All environments\\\" (ref=e53)\\n  - text \\\"41 of 41\\\"\\n  - button \\\"New deploy\\\" (ref=e23)\\n  - generic [grid-cols:36px 231.578px 148.875px 165.422px 132.328px 115.797px 40px]\\n    - text \\\"Service\\\"\\n    - text \\\"Env\\\"\\n    - text \\\"Status\\\"\\n    - text \\\"Region\\\"\\n    - text \\\"Duration\\\"\\n  - generic [grid-cols:36px 231.578px 148.875px 165.422px 132.328px 115.797px 40px]\\n    - generic \\\"Drag to reorder\\\" (ref=e54)\\n    - button \\\"2328\\\" (ref=e55)\\n      - text \\\"2328\\\"\\n    - text \\\"staging\\\"\\n    - text \\\"building\\\"\\n    - text \\\"us-east-1\\\"\\n    - text \\\"—\\\"\\n    - button \\\"Row actions\\\" (ref=e56)\\n  - generic [grid-cols:36px 231.578px 148.875px 165.422px 132.328px 115.797px 40px]\\n    - generic \\\"Drag to reorder\\\" (ref=e57)\\n    - button \\\"api-gateway 255d7e0\\\" (ref=e58)\\n      - text \\\"api-gateway\\\"\\n      - text \\\"255d7e0\\\"\\n    - text \\\"staging\\\"\\n    - text \\\"queued\\\"\\n    - text \\\"ap-south-1\\\"\\n    - text \\\"26.5s\\\"\\n    - button \\\"Row actions\\\" (ref=e59)\\n  - generic [grid-cols:36px 231.578px 148.875px 165.422px 132.328px 115.797px 40px]\\n    - generic \\\"Drag to reorder\\\" (ref=e60)\\n    - button \\\"session-store 3a9bf23\\\" (ref=e61)\\n      - text \\\"session-store\\\"\\n      - text \\\"3a9bf23\\\"\\n    - text \\\"production\\\"\\n    - text \\\"live\\\"\\n    - text \\\"us-east-1\\\"\\n    - text \\\"206.4s\\\"\\n    - button \\\"Row actions\\\" (ref=e62)\\n  - generic [grid-cols:36px 231.578px 148.875px 165.422px 132.328px 115.797px 40px]\\n    - generic \\\"Drag to reorder\\\" (ref=e63)\\n    - button \\\"notification-hub 6d120f3\\\" (ref=e64)\\n      - text \\\"notification-hub\\\"\\n      - text \\\"6d120f3\\\"\\n    - text \\\"preview\\\"\\n    - text \\\"live\\\"\\n    - text \\\"eu-west-1\\\"\\n    - text \\\"130.8s\\\"\\n    - button \\\"Row actions\\\" (ref=e65)\\n  - generic [grid-cols:36px 231.578px 148.875px 165.422px 132.328px 115.797px 40px]\\n    - generic \\\"Drag to reorder\\\" (ref=e66)\\n    - button \\\"webhook-relay 1b66bf9\\\" (ref=e67)\\n      - text \\\"webhook-relay\\\"\\n      - text \\\"1b66bf9\\\"\\n    - text \\\"production\\\"\\n    - text \\\"building\\\"\\n    - text \\\"us-west-2\\\"\\n    - text \\\"59.0s\\\"\\n    - button \\\"Row actions\\\" (ref=e68)\\n  - generic [grid-cols:36px 231.578px 148.875px 165.422px 132.328px 115.797px 40px]\\n    - generic \\\"Drag to reorder\\\" (ref=e69)\\n    - button \\\"billing-worker a9ec2c1\\\" (ref=e70)\\n      - text \\\"billing-worker\\\"\\n      - text \\\"a9ec2c1\\\"\\n    - text \\\"staging\\\"\\n    - text \\\"building\\\"\\n    - text \\\"eu-west-1\\\"\\n    - text \\\"147.7s\\\"\\n    - button \\\"Row actions\\\" (ref=e71)\\n  - generic [grid-cols:36px 231.578px 148.875px 165.422px 132.328px 115.797px 40px]\\n    - generic \\\"Drag to reorder\\\" (ref=e72)\\n    - button \\\"billing-worker f27d19e\\\" (ref=e73)\\n      - text \\\"billing-worker\\\"\\n      - text \\\"f27d19e\\\"\\n    - text \\\"staging\\\"\\n    - text \\\"building\\\"\\n    - text \\\"us-west-2\\\"\\n    - text \\\"107.5s\\\"\\n    - button \\\"Row actions\\\" (ref=e74)\\n  - generic [grid-cols:36px 231.578px 148.875px 165.422px 132.328px 115.797px 40px]\\n    - generic \\\"Drag to reorder\\\" (ref=e75)\\n    - button \\\"image-proxy 56373af\\\" (ref=e76)\\n      - text \\\"image-proxy\\\"\\n      - text \\\"56373af\\\"\\n    - text \\\"preview\\\"\\n    - text \\\"live\\\"\\n    - text \\\"us-west-2\\\"\\n    - text \\\"224.4s\\\"\\n    - button \\\"Row actions\\\" (ref=e77)\\n  - generic [grid-cols:36px 231.578px 148.875px 165.422px 132.328px 115.797px 40px]\\n    - generic \\\"Drag to reorder\\\" (ref=e78)\\n    - button \\\"auth-service 439fa8e\\\" (ref=e79)\\n      - text \\\"auth-service\\\"\\n      - text \\\"439fa8e\\\"\\n    - text \\\"staging\\\"\\n    - text \\\"live\\\"\\n    - text \\\"eu-central-1\\\"\\n    - text \\\"78.1s\\\"\\n    - button \\\"Row actions\\\" (ref=e80)\\n  - generic [grid-cols:36px 231.578px 148.875px 165.422px 132.328px 115.797px 40px]\\n    - generic \\\"Drag to reorder\\\" (ref=e81)\\n    - button \\\"billing-worker da4e5a3\\\" (ref=e82)\\n      - text \\\"billing-worker\\\"\\n      - text \\\"da4e5a3\\\"\\n    - text \\\"production\\\"\\n    - text \\\"live\\\"\\n    - text \\\"eu-west-1\\\"\\n    - text \\\"231.6s\\\"\\n    - button \\\"Row actions\\\" (ref=e83)\\n  - generic [grid-cols:36px 231.578px 148.875px 165.422px 132.328px 115.797px 40px]\\n    - generic \\\"Drag to reorder\\\" (ref=e84)\\n    - button \\\"notification-hub 740b04b\\\" (ref=e85)\\n      - text \\\"notification-hub\\\"\\n      - text \\\"740b04b\\\"\\n    - text \\\"production\\\"\\n    - text \\\"live\\\"\\n    - text \\\"us-east-1\\\"\\n    - text \\\"62.2s\\\"\\n    - button \\\"Row actions\\\" (ref=e86)\\n  - generic [grid-cols:36px 231.578px 148.875px 165.422px 132.328px 115.797px 40px]\\n    - generic \\\"Drag to reorder\\\" (ref=e87)\\n    - button \\\"session-store 44f9280\\\" (ref=e88)\\n      - text \\\"session-store\\\"\\n      - text \\\"44f9280\\\"\\n    - text \\\"staging\\\"\\n    - text \\\"queued\\\"\\n    - text \\\"ap-northeast-1\\\"\\n    - text \\\"211.1s\\\"\\n    - button \\\"Row actions\\\" (ref=e89)\\n  - generic [grid-cols:36px 231.578px 148.875px 165.422px 132.328px 115.797px 40px]\\n    - generic \\\"Drag to reorder\\\" (ref=e90)\\n    - button \\\"webhook-relay 1681a7a\\\" (ref=e91)\\n      - text \\\"webhook-relay\\\"\\n      - text \\\"1681a7a\\\"\\n    - text \\\"staging\\\"\\n    - text \\\"live\\\"\\n    - text \\\"eu-central-1\\\"\\n    - text \\\"9.5s\\\"\\n    - button \\\"Row actions\\\" (ref=e92)\\n ",
+      "truncated": true,
+      "chars": 6254
+    }
+  },
+  {
+    "scenario": "network-timeout",
+    "tool": "playwright",
+    "mode": "present",
+    "matcher": "detect()",
+    "expected_detect": true,
+    "detected_issue": true,
+    "calls": [
+      "browser_click",
+      "browser_click",
+      "browser_network_requests"
+    ],
+    "observation": {
+      "text": "### Result\n192. [POST] http://localhost:8787/api/login => [200] OK\n194. [GET] http://localhost:8787/api/items?limit=1 => [200] OK\n196. [GET] http://localhost:8787/api/broken/timeout\n198. [GET] http://localhost:8787/api/build-log\n\nNote: 194 static requests not shown, run with \"static\" option to see them.",
+      "truncated": false,
+      "chars": 304
+    }
+  },
+  {
+    "scenario": "network-timeout",
+    "tool": "devtools",
+    "mode": "present",
+    "matcher": "detect()",
+    "expected_detect": true,
+    "detected_issue": true,
+    "calls": [
+      "click",
+      "click",
+      "list_network_requests"
+    ],
+    "observation": {
+      "text": "## Network requests\nShowing 1-3 of 3 (Page 1 of 1).\nreqid=194 POST http://localhost:8787/api/login [200]\nreqid=196 GET http://localhost:8787/api/items?limit=1 [200]\nreqid=199 GET http://localhost:8787/api/broken/timeout [pending]",
+      "truncated": false,
+      "chars": 229
+    }
+  },
+  {
+    "scenario": "network-timeout",
+    "tool": "reticle",
+    "mode": "present",
+    "matcher": "detect()",
+    "expected_detect": true,
+    "detected_issue": true,
+    "calls": [
+      "reticle_act",
+      "reticle_act",
+      "reticle_network"
+    ],
+    "observation": {
+      "text": "{\"calls\":[{\"method\":\"POST\",\"url\":\"http://localhost:8787/api/login\",\"status\":200,\"statusText\":\"OK\",\"contentType\":\"application/json; charset=utf-8\",\"responseSize\":67,\"requestBody\":\"{\\\"email\\\":\\\"admin@reticle.dev\\\",\\\"password\\\":\\\"[REDACTED]\\\"}\",\"responseBody\":\"{\\\"token\\\":\\\"[REDACTED]\\\",\\\"user\\\":{\\\"email\\\":\\\"admin@reticle.dev\\\"}}\",\"ms\":4,\"headers\":{\"etag\":\"W/\\\"43-e1C33w6ch6DYUMIJ5AGObntl9VA\\\"\",\"connection\":\"keep-alive\",\"access-control-allow-origin\":\"*\",\"content-length\":\"67\",\"keep-alive\":\"timeout=5\",\"date\":\"Sat, 22 Aug 2026 17:22:13 GMT\",\"content-type\":\"application/json; charset=utf-8\",\"x-powered-by\":\"Express\"}},{\"method\":\"GET\",\"url\":\"http://localhost:8787/api/items?limit=1\",\"status\":200,\"statusText\":\"OK\",\"contentType\":\"application/json; charset=utf-8\",\"responseSize\":49,\"responseBody\":\"{\\\"total\\\":1000,\\\"items\\\":[{\\\"id\\\":1,\\\"name\\\":\\\"Item 1\\\"}]}\",\"ms\":6,\"headers\":{\"etag\":\"W/\\\"31-N9j67PaXJR1yIoCgWCkvi3gJWUE\\\"\",\"connection\":\"keep-alive\",\"access-control-allow-origin\":\"*\",\"content-length\":\"49\",\"keep-alive\":\"timeout=5\",\"date\":\"Sat, 22 Aug 2026 17:22:14 GMT\",\"content-type\":\"application/json; charset=utf-8\",\"x-powered-by\":\"Express\"}},{\"method\":\"GET\",\"url\":\"http://localhost:8787/api/broken/timeout\",\"status\":\"pending\"},{\"method\":\"GET\",\"url\":\"http://localhost:8787/api/build-log\",\"status\":200,\"ms\":1326,\"headers\":{\"transfer-encoding\":\"chunked\",\"access-control-allow-origin\":\"*\",\"cache-control\":\"no-cache\",\"date\":\"Sat, 22 Aug 2026 17:22:14 GMT\",\"content-type\":\"text/event-stream\",\"x-powered-by\":\"Express\",\"connection\":\"keep-alive\"}}],\"cost\":{\"bytes\":1537,\"tokens\":385}}",
+      "truncated": false,
+      "chars": 1572
+    }
+  },
+  {
+    "scenario": "no-regression-control",
+    "tool": "playwright",
+    "mode": "present",
+    "matcher": "\\b(error|crash|failed|undefined)\\b",
+    "expected_detect": false,
+    "detected_issue": false,
+    "calls": [
+      "browser_click",
+      "browser_snapshot"
+    ],
+    "observation": {
+      "text": "### Page\n- Page URL: http://localhost:4312/overview\n- Page Title: Reticle · Mission Control\n- Console: 4 errors, 1 warnings\n### Snapshot\n```yaml\n- generic [ref=e1]:\n  - generic [ref=e22]:\n    - complementary [ref=e23]:\n      - generic [ref=e26]:\n        - generic [ref=e27]: Reticle\n        - generic [ref=e28]: mission control\n      - generic [ref=e29]: Workspace\n      - button \"Overview\" [active] [ref=e30] [cursor=pointer]:\n        - img [ref=e31]\n        - text: Overview\n      - button \"Deployments 40\" [ref=e33] [cursor=pointer]:\n        - img [ref=e34]\n        - text: Deployments\n        - generic [ref=e36]: \"40\"\n      - button \"Compose\" [ref=e37] [cursor=pointer]:\n        - img [ref=e38]\n        - text: Compose\n      - button \"Diagnostics\" [ref=e40] [cursor=pointer]:\n        - img [ref=e41]\n        - text: Diagnostics\n      - button \"Hostile\" [ref=e43] [cursor=pointer]:\n        - img [ref=e44]\n        - text: Hostile\n      - button \"Saved Items\" [ref=e46] [cursor=pointer]:\n        - img [ref=e47]\n        - text: Saved Items\n      - generic \"Reticle agent session\" [ref=e50]:\n        - generic [ref=e52]:\n          - generic [ref=e53]: Reticle connected\n          - generic [ref=e54]: session · demo\n    - generic [ref=e55]:\n      - banner [ref=e56]:\n        - generic [ref=e57]:\n          - generic [ref=e58]: Reticle\n          - generic [ref=e59]: /\n          - heading \"Overview\" [level=1] [ref=e60]\n          - generic [ref=e61]: fleet health at a glance\n        - button \"Search or jump to… ⌘K\" [ref=e62] [cursor=pointer]:\n          - img [ref=e63]\n          - text: Search or jump to…\n          - generic [ref=e65]: ⌘K\n        - button \"Sign out\" [ref=e66] [cursor=pointer]\n        - generic \"admin@reticle.dev\" [ref=e67]: A\n      - generic [ref=e69]:\n        - generic [ref=e70]:\n          - generic [ref=e71]:\n            - generic [ref=e72]: Deploys today\n            - generic [ref=e73]: \"312\"\n            - generic [ref=e74]: ▲ 12.4% vs last week\n            - img [ref=e76]\n          - generic [ref=e79]:\n            - generic [ref=e80]: Success rate\n            - generic [ref=e82]: 99.2%\n            - generic [ref=e83]: ▲ 0.6pt vs last week\n            - img [ref=e85]\n          - generic [ref=e88]:\n            - generic [ref=e89]: p95 latency\n            - generic [ref=e91]: 142ms\n            - generic [ref=e92]: ▼ 8.1% vs last week\n            - img [ref=e94]\n          - generic [ref=e97]:\n            - generic [ref=e98]: Active services\n            - generic [ref=e99]: \"48\"\n            - generic [ref=e100]: ▲ 4.0% vs last week\n            - img [ref=e102]\n        - generic [ref=e105]:\n          - generic [ref=e106]:\n            - generic [ref=e107]:\n              - generic [ref=e108]:\n                - generic [ref=e109]: Traffic\n                - heading \"Requests per minute\" [level=3] [ref=e110]\n              - generic [ref=e111]: live\n            - img [ref=e113]\n          - generic [ref=e116]:\n            - generic [ref=e117]: Activity\n            - generic [ref=e120]:\n              - generic [ref=e121]: api-gateway shipped to production · us-east-1\n              - generic [ref=e122]: 2m ago · deploy\n            - generic [ref=e125]:\n              - generic [ref=e126]: analytics-pipeline scaled 6 → 11 replicas\n              - generic [ref=e127]: 9m ago · scale\n            - generic [ref=e130]:\n              - generic [ref=e131]: billing-worker p95 latency above 400ms\n              - generic [ref=e132]: 14m ago · alert\n            - generic [ref=e135]:\n              - generic [ref=e136]: web-frontend preview deployed by mara\n              - generic [ref=e137]: 21m ago · deploy\n            - generic [ref=e140]:\n              - generic [ref=e141]: search-indexer rolled back to a31f0c9\n              - generic [ref=e142]: 33m ago · rollback\n            - generic [ref=e145]:\n              - generic [ref=e146]: auth-service shipped to staging · eu-west-1\n              - generic [ref=e147]: 41m ago · deploy\n  - generic:\n    - generic:\n      - text: Agent activity will appear here\n      - button \"Start Reticle\" [ref=e20]:\n        - img\n```\n### Events\n- New console entries: .playwright-mcp/console-2026-08-22T17-22-18-960Z.log#L6-L7",
+      "truncated": false,
+      "chars": 4200
+    }
+  },
+  {
+    "scenario": "no-regression-control",
+    "tool": "devtools",
+    "mode": "present",
+    "matcher": "\\b(error|crash|failed|undefined)\\b",
+    "expected_detect": false,
+    "detected_issue": false,
+    "calls": [
+      "click",
+      "take_snapshot"
+    ],
+    "observation": {
+      "text": "## Latest page snapshot\nuid=1_0 RootWebArea \"Reticle · Mission Control\" url=\"http://localhost:4312/overview\"\n  uid=2_0 complementary\n    uid=2_1 StaticText \"Reticle\"\n    uid=2_2 StaticText \"MISSION CONTROL\"\n    uid=2_3 StaticText \"WORKSPACE\"\n    uid=2_4 button \"Overview\" focusable focused\n    uid=2_5 button \"Deployments 40\"\n    uid=2_6 button \"Compose\"\n    uid=2_7 button \"Diagnostics\"\n    uid=2_8 button \"Hostile\"\n    uid=2_9 button \"Saved Items\"\n    uid=2_10 StaticText \"Reticle connected\"\n    uid=2_11 StaticText \"SESSION · DEMO\"\n  uid=2_12 banner\n    uid=2_13 StaticText \"RETICLE\"\n    uid=2_14 StaticText \"/\"\n    uid=2_15 heading \"Overview\" level=\"1\"\n    uid=2_16 StaticText \"fleet health at a glance\"\n    uid=2_17 button \"Search or jump to… ⌘K\"\n    uid=2_18 button \"Sign out\"\n    uid=2_19 StaticText \"A\"\n  uid=2_20 StaticText \"DEPLOYS TODAY\"\n  uid=2_21 StaticText \"312\"\n  uid=2_22 StaticText \"▲\"\n  uid=2_23 StaticText \" \"\n  uid=2_24 StaticText \"12.4\"\n  uid=2_25 StaticText \"%\"\n  uid=2_26 StaticText \" \"\n  uid=2_27 StaticText \"vs last week\"\n  uid=2_28 StaticText \"SUCCESS RATE\"\n  uid=2_29 StaticText \"99.2\"\n  uid=2_30 StaticText \"%\"\n  uid=2_31 StaticText \"▲\"\n  uid=2_32 StaticText \" \"\n  uid=2_33 StaticText \"0.6\"\n  uid=2_34 StaticText \"pt\"\n  uid=2_35 StaticText \" \"\n  uid=2_36 StaticText \"vs last week\"\n  uid=2_37 StaticText \"P95 LATENCY\"\n  uid=2_38 StaticText \"142\"\n  uid=2_39 StaticText \"ms\"\n  uid=2_40 StaticText \"▼\"\n  uid=2_41 StaticText \" \"\n  uid=2_42 StaticText \"8.1\"\n  uid=2_43 StaticText \"%\"\n  uid=2_44 StaticText \" \"\n  uid=2_45 StaticText \"vs last week\"\n  uid=2_46 StaticText \"ACTIVE SERVICES\"\n  uid=2_47 StaticText \"48\"\n  uid=2_48 StaticText \"▲\"\n  uid=2_49 StaticText \" \"\n  uid=2_50 StaticText \"4.0\"\n  uid=2_51 StaticText \"%\"\n  uid=2_52 StaticText \" \"\n  uid=2_53 StaticText \"vs last week\"\n  uid=2_54 StaticText \"TRAFFIC\"\n  uid=2_55 heading \"Requests per minute\" level=\"3\"\n  uid=2_56 StaticText \"live\"\n  uid=2_57 StaticText \"ACTIVITY\"\n  uid=2_58 StaticText \"api-gateway shipped to production · us-east-1\"\n  uid=2_59 StaticText \"2m\"\n  uid=2_60 StaticText \" ago · \"\n  uid=2_61 StaticText \"deploy\"\n  uid=2_62 StaticText \"analytics-pipeline scaled 6 → 11 replicas\"\n  uid=2_63 StaticText \"9m\"\n  uid=2_64 StaticText \" ago · \"\n  uid=2_65 StaticText \"scale\"\n  uid=2_66 StaticText \"billing-worker p95 latency above 400ms\"\n  uid=2_67 StaticText \"14m\"\n  uid=2_68 StaticText \" ago · \"\n  uid=2_69 StaticText \"alert\"\n  uid=2_70 StaticText \"web-frontend preview deployed by mara\"\n  uid=2_71 StaticText \"21m\"\n  uid=2_72 StaticText \" ago · \"\n  uid=2_73 StaticText \"deploy\"\n  uid=2_74 StaticText \"search-indexer rolled back to a31f0c9\"\n  uid=2_75 StaticText \"33m\"\n  uid=2_76 StaticText \" ago · \"\n  uid=2_77 StaticText \"rollback\"\n  uid=2_78 StaticText \"auth-service shipped to staging · eu-west-1\"\n  uid=2_79 StaticText \"41m\"\n  uid=2_80 StaticText \" ago · \"\n  uid=2_81 StaticText \"deploy\"\n  uid=1_10 button \"Start Reticle\" expandable\n",
+      "truncated": false,
+      "chars": 2930
+    }
+  },
+  {
+    "scenario": "no-regression-control",
+    "tool": "reticle",
+    "mode": "present",
+    "matcher": "\\b(error|crash|failed|undefined)\\b",
+    "expected_detect": false,
+    "detected_issue": false,
+    "calls": [
+      "reticle_act",
+      "reticle_snapshot"
+    ],
+    "observation": {
+      "text": "{\"tree\":\"- generic [grid-cols:248px 1032px]\\n  - complementary\\n    - text \\\"Reticle\\\"\\n    - text \\\"mission control\\\"\\n    - text \\\"Workspace\\\"\\n    - button \\\"Overview\\\" (ref=e18) [focused]\\n    - button \\\"Deployments40\\\" (ref=e10)\\n      - text \\\"40\\\"\\n    - button \\\"Compose\\\" (ref=e20)\\n    - button \\\"Diagnostics\\\" (ref=e21)\\n    - button \\\"Hostile\\\" (ref=e22)\\n    - button \\\"Saved Items\\\" (ref=e23)\\n    - generic \\\"Reticle agent session\\\" (ref=e24)\\n      - text \\\"Reticle connected\\\"\\n      - text \\\"session · demo\\\"\\n  - banner\\n    - text \\\"Reticle\\\"\\n    - text \\\"/\\\"\\n    - heading \\\"Overview\\\" (ref=e25)\\n    - text \\\"fleet health at a glance\\\"\\n    - button \\\"Search or jump to…⌘K\\\" (ref=e26)\\n      - text \\\"⌘K\\\"\\n    - button \\\"Sign out\\\" (ref=e27)\\n    - generic \\\"admin@reticle.dev\\\" (ref=e28) [grid-cols:34px]\\n  - generic [grid-cols:232px 232px 232px 232px]\\n    - text \\\"Deploys today\\\"\\n    - text \\\"312\\\"\\n    - text \\\"▲ 12.4%\\\"\\n      - text \\\"vs last week\\\"\\n    - text \\\"Success rate\\\"\\n    - text \\\"99.2%\\\"\\n    - text \\\"▲ 0.6pt\\\"\\n      - text \\\"vs last week\\\"\\n    - text \\\"p95 latency\\\"\\n    - text \\\"142ms\\\"\\n    - text \\\"▼ 8.1%\\\"\\n      - text \\\"vs last week\\\"\\n    - text \\\"Active services\\\"\\n    - text \\\"48\\\"\\n    - text \\\"▲ 4.0%\\\"\\n      - text \\\"vs last week\\\"\\n  - generic [grid-cols:590.766px 369.234px]\\n    - text \\\"Traffic\\\"\\n    - heading \\\"Requests per minute\\\" (ref=e29)\\n    - text \\\"live\\\"\\n    - text \\\"Activity\\\"\\n    - text \\\"api-gateway shipped to production · us-east-1\\\"\\n    - text \\\"2m ago · deploy\\\"\\n    - text \\\"analytics-pipeline scaled 6 → 11 replicas\\\"\\n    - text \\\"9m ago · scale\\\"\\n    - text \\\"billing-worker p95 latency above 400ms\\\"\\n    - text \\\"14m ago · alert\\\"\\n    - text \\\"web-frontend preview deployed by mara\\\"\\n    - text \\\"21m ago · deploy\\\"\\n    - text \\\"search-indexer rolled back to a31f0c9\\\"\\n    - text \\\"33m ago · rollback\\\"\\n    - text \\\"auth-service shipped to staging · eu-west-1\\\"\\n    - text \\\"41m ago · deploy\\\"\",\"nodes\":58,\"truncated\":false,\"status\":{\"route\":\"/overview\",\"title\":\"Reticle · Mission Control\"},\"cost\":{\"bytes\":2100,\"tokens\":525}}",
+      "truncated": false,
+      "chars": 2135
+    }
+  }
+]
