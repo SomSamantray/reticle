@@ -63,13 +63,17 @@ describe('presenter HUD shell', () => {
   it('shows edge sheen only on the expanded toolbar, not the collapsed FAB', () => {
     const p = new Presenter({});
     p.mount();
+    // `autoOpenChat` defaults ON, so a session now STARTS expanded with the chat open — the HUD's
+    // content is the point of the HUD. The sheen is still an expanded-only affordance, so this
+    // collapses first to reach the state it is about rather than assuming session start is it.
     p.sessionStart();
     const css = document.querySelector('style[data-reticle-overlay]')?.textContent ?? '';
     expect(css).toContain('[data-reticle-min="0"] [data-reticle-hud] .reticle-hud-deco');
     const deco = document.querySelector<HTMLElement>('.reticle-hud-deco');
     expect(deco).not.toBeNull();
-    const collapsed = getComputedStyle(deco as Element).visibility;
-    expect(collapsed).toBe('hidden');
+    expect(getComputedStyle(deco as Element).visibility).toBe('visible');
+    (document.querySelector('[data-reticle-min-btn]') as HTMLElement | null)?.click();
+    expect(getComputedStyle(deco as Element).visibility).toBe('hidden');
     (document.querySelector('[data-reticle-fab]') as HTMLElement).click();
     expect(getComputedStyle(deco as Element).visibility).toBe('visible');
     p.destroy();
@@ -107,6 +111,9 @@ describe('presenter HUD shell', () => {
     const p = new Presenter({});
     p.mount();
     p.sessionStart();
+    // A session now starts EXPANDED (autoOpenChat defaults ON), so collapse to reach the FAB this
+    // test is about. The behaviour under test — a drag must not be read as a click — is unchanged.
+    (document.querySelector('[data-reticle-min-btn]') as HTMLElement | null)?.click();
     const fab = document.querySelector('[data-reticle-fab]');
     const dock = document.querySelector('[data-reticle-dock]');
     expect(fab).not.toBeNull();
