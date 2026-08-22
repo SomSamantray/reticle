@@ -13,7 +13,18 @@ afterEach(() => {
   document.querySelectorAll('[data-reticle-overlay]').forEach((e) => e.remove());
   document.body.innerHTML = '';
 });
-describe('presenter HUD shell', () => {
+/**
+ * Every test here mounts a full HUD into jsdom, which is slow, and on a loaded Windows runner it is
+ * slow enough to blow vitest's 5s default. The assertions are synchronous, so the timeout was never
+ * measuring the product — only the machine, and only when that machine was busy, which is to say
+ * only in CI.
+ *
+ * A bound, not a duration: nothing here asserts how long anything took, and raising the ceiling
+ * cannot mask a real failure because a broken expectation still fails immediately.
+ */
+const HUD_MOUNT_TIMEOUT_MS = 30_000;
+
+describe('presenter HUD shell', { timeout: HUD_MOUNT_TIMEOUT_MS }, () => {
   // Expanding now OPENS the chat rather than revealing a bare toolbar: the chat is the HUD's
   // content, and a toolbar with nothing above it made the agent's log something you had to know to
   // go looking for. The toggle still closes it, which the next assertion covers.
