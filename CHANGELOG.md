@@ -4,6 +4,16 @@ All notable changes to the **`@reticlehq/*`** packages are documented here (each
 
 ## [Unreleased]
 
+### Added
+
+- **`@reticlehq/server` — a run can carry what it already established, behind a flag that is OFF and unproven.** Verification is multi-step, and the only thing holding the thread together is the agent's own context window; when that compacts the thread is gone and the work restarts. `RETICLE_RUN_ENVELOPE=1` attaches a bounded `run` block to session-bound tool results: what this run has established, folded and capped, plus the declared intents no verdict has discharged yet.
+
+  **It is a fold over the journal, never a second store.** `.reticle/sessions/<id>/` already holds an append-only record of every action dispatched and every event observed, and the run is derived from it on every call — the step count is the journal's action count, the facts are its settle outcomes and route changes, and the document each was seen under comes off the events themselves so a full navigation drops them rather than carrying them forward. Run state written independently would drift from that ledger, and the day it drifted the disagreement would land inside a verdict.
+
+  Only what Reticle OBSERVED goes in. An action that settled is a fact. A route change is a fact. What the agent intends is not, and cannot enter.
+
+  **Flagged off because the claim is not proven.** The bet is that the block costs fewer tokens than the re-queries it prevents. Measured on the deterministic replay benchmark, the cost side is real and the saving side is invisible — that pass has no model in the loop, so nothing there can re-query and nothing can be saved. It does not become the default until an agent-loop measurement says the trade is positive, and it comes out if it says otherwise.
+
 ### Fixed
 
 - **`@reticlehq/server` — a cloud call that stalls no longer hangs the tool call waiting on it.** Node's `fetch` has no default timeout: a connection that opens and then goes quiet never settles, and every cloud request in the server was awaited without one. The worst of them sat inside `reticle_flow_verify` on the `verify: 'server'` path, where a stalled hosted runner meant an MCP call that simply never returned — the failure mode this product treats as its worst, because an agent waiting on a tool has no way to notice, retry, or report. The same absence made every `reticle cloud …` subcommand able to sit at a blank terminal indefinitely.

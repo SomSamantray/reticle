@@ -235,7 +235,7 @@ export const EXTENDED_TOOL_NAMES: ReadonlySet<string> = new Set([
 export const VERIFY_TOOL_NAMES: ReadonlySet<string> = new Set([ReticleTool.ACT_AND_WAIT]);
 
 /** Is the truthy form of a boolean env var set? `1`, `true`, `yes` — anything else is off. */
-function envFlagOn(raw: string | undefined): boolean {
+export function envFlagOn(raw: string | undefined): boolean {
   if (raw === undefined) return false;
   const value = raw.trim().toLowerCase();
   return '1' === value || 'true' === value || 'yes' === value || 'on' === value;

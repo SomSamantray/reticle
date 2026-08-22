@@ -187,6 +187,12 @@ export const EnvelopeKey = {
   VERSION_SKEW: 'version_skew',
   /** A feedback report that was accepted and then failed to send. Only the reporter can act on it. */
   FEEDBACK_UNDELIVERED: 'feedback_undelivered',
+  /**
+   * What this run has already established, folded out of the session journal. Flagged OFF by
+   * default — see `RUN_ENVELOPE_ENV`. Declared here so that when it IS on, a schema-strict client
+   * keeps it rather than silently dropping the whole point of the feature.
+   */
+  RUN: 'run',
 } as const;
 export type EnvelopeKey = (typeof EnvelopeKey)[keyof typeof EnvelopeKey];
 

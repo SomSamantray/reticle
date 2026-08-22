@@ -32,6 +32,10 @@ import {
 } from '../impact/impact-recorder.js';
 import { type FrictionKind, frictionOf, inviteFor } from './feedback-invite.js';
 import type { ToolDef, ToolDeps } from './tools.js';
+import { IntentStore } from '../intent/intent-store.js';
+import { sessionRoot } from '../project/session-root.js';
+import { runEnvelopeEnabled, runEnvelopeFor } from '../runs/run-envelope.js';
+import type { RunEnvelope } from '@reticlehq/core';
 
 /**
  * The live-session tools whose result MUST carry the
@@ -263,6 +267,34 @@ function firstOversizedArg(args: Record<string, unknown>): string | undefined {
   return undefined;
 }
 
+/**
+ * The run envelope for this session, or nothing to say.
+ *
+ * Reads the ledger, never writes one. `remaining` comes from the intent store because an
+ * undischarged intent is a property of that ledger too, and both are read fresh rather than cached:
+ * a cache is the second copy this design exists to avoid. Never throws — a run block is a courtesy
+ * on top of an answer the caller already has, and must not be why a tool call fails.
+ */
+async function runFor(deps: ToolDeps, session: Session): Promise<RunEnvelope | undefined> {
+  try {
+    // The intent ledger belongs to the PROJECT the session is driving, not to whichever directory the
+    // daemon happens to have been started in — the same resolution every other artifact read uses.
+    const root = sessionRoot(deps, session.id);
+    const intents = await new IntentStore(deps.fs, root, { now: deps.now }).open();
+    return runEnvelopeFor({
+      runId: session.id,
+      actions: await session.readJournalActions(),
+      // The ring buffer, not the durable event log: the facts that survive the fold come from the
+      // last handful of actions, whose events are still here, and re-reading a session-long event
+      // file on every tool call would cost more than the whole envelope saves.
+      events: session.eventsSince(0),
+      intents,
+    });
+  } catch {
+    return undefined;
+  }
+}
+
 export async function runTool<Ext>(
   tool: ToolDef<Ext>,
   deps: ToolDeps<Ext>,
@@ -476,5 +508,15 @@ export async function runTool<Ext>(
   // run, same discipline as the pool lease — a hint on every call is noise that gets tuned out.
   const unverified = getSessionMetrics().takeUnverifiedNudge();
   if (unverified !== undefined) envelope[EnvelopeKey.VERIFY_NEXT] = unverified;
+  // What this run has already established, folded out of the session journal — never a second store
+  // of its own. Spliced on the SESSION-BOUND branch on purpose: those are the tools that look at or
+  // drive the live page, they are the ones `withSessionEnvelope` declares the envelope shape for,
+  // and a disk-side tool has no run to report. Flagged OFF by default; the feature is a bet that it
+  // costs fewer tokens than the re-queries it prevents, and it does not get to be the default until
+  // the benchmark says so.
+  if (runEnvelopeEnabled(process.env)) {
+    const run = await runFor(deps, resolved);
+    if (run !== undefined) envelope[EnvelopeKey.RUN] = run;
+  }
   return Object.keys(envelope).length > 0 ? { ...result, ...envelope } : result;
 }

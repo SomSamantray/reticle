@@ -88,4 +88,7 @@ const ENVELOPE_SHAPED = [
   'version',
   'control',
   'warning',
+  // The run envelope. A key this short would otherwise slip the undeclared check while still being
+  // dropped at runtime by the outputSchema gate — the exact silent failure this guard is about.
+  'run',
 ];
