@@ -51,8 +51,7 @@ export function leaseCaveat(state: LeaseBrowserState | undefined): string | unde
       ? ` This Playwright wants ${state.wantedRevision} and the cache holds ${installed.join(', ')}, so the builds already on this machine will not be used.`
       : '';
 
-  const command =
-    state.installCommand === undefined ? '' : ` The fix is: ${state.installCommand}.`;
+  const command = state.installCommand === undefined ? '' : ` The fix is: ${state.installCommand}.`;
 
   return (
     'NOTE — reticle_lease cannot run here: it drives a Reticle-owned Chromium and that browser is ' +

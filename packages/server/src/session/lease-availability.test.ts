@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { leaseCaveat } from './lease-availability.js';
+import { diagnoseNoSession } from './no-session-diagnosis.js';
 
 /**
  * The escape hatch must not be recommended by the same output that just diagnosed why it cannot work.
@@ -26,7 +27,10 @@ describe('leaseCaveat', () => {
   });
 
   it('warns, and names the install command, when the browser is not there', () => {
-    const caveat = leaseCaveat({ exists: false, installCommand: 'npx playwright@1.62.1 install chromium' });
+    const caveat = leaseCaveat({
+      exists: false,
+      installCommand: 'npx playwright@1.62.1 install chromium',
+    });
     expect(caveat).toBeDefined();
     expect(caveat).toContain('reticle_lease');
     expect(caveat).toContain('npx playwright@1.62.1 install chromium');
@@ -53,5 +57,37 @@ describe('leaseCaveat', () => {
   it('never promises the lease will work while saying it cannot', () => {
     const caveat = leaseCaveat({ exists: false }) ?? '';
     expect(caveat).not.toMatch(/you do not have to wait/i);
+  });
+});
+
+/**
+ * The caveat has to reach the message, not merely exist. It was written because the offer and the
+ * diagnosis were being made by the same output; a helper nobody calls would reproduce that exactly.
+ */
+describe('the diagnosis carries the caveat', () => {
+  const facts = {
+    everConnected: false,
+    initialized: true,
+    listening: [3000],
+    port: 4400,
+  };
+
+  it('offers the lease plainly when the browser is fine', () => {
+    const message = diagnoseNoSession({ ...facts, leaseBrowser: { exists: true } });
+    expect(message).toContain('reticle_lease');
+    expect(message).not.toContain('cannot run here');
+  });
+
+  it('still offers it, but says it cannot run, when the browser is missing', () => {
+    const message = diagnoseNoSession({
+      ...facts,
+      leaseBrowser: { exists: false, installCommand: 'npx playwright@1.62.1 install chromium' },
+    });
+    expect(message).toContain('cannot run here');
+    expect(message).toContain('npx playwright@1.62.1 install chromium');
+  });
+
+  it('is unchanged when the caller did not probe', () => {
+    expect(diagnoseNoSession(facts)).toBe(diagnoseNoSession({ ...facts, leaseBrowser: undefined }));
   });
 });
