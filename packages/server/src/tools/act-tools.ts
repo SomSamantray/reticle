@@ -17,6 +17,7 @@ import {
   InputMode,
   ReticleCommand,
   Verified,
+  VerifiedReason,
   PredicateKind,
 } from '@reticlehq/core';
 import { assertNativeInputSupported } from './act-danger.js';
@@ -26,6 +27,8 @@ import { buildReactionReport, summarizeReaction } from '../events/reaction.js';
 import { parsePredicate } from '../events/predicate-parse.js';
 import { causalSummary } from '../capsule/causal-summary.js';
 import { findContradictions } from '../events/contradictions.js';
+import { gapsForAction } from '../honesty/instrumentation-gaps.js';
+import type { Predicate } from '../events/predicate-schema.js';
 import {
   inFlightRequestLabels,
   repeatedRequestLabels,
@@ -126,6 +129,21 @@ async function resolveActTarget(
   if (!out.ok) return { kind: 'error', message: out.error ?? 'target query failed' };
   const elements = asRecord(out.result)['elements'];
   return resolveTargetRef(Array.isArray(elements) ? elements : []);
+}
+
+/**
+ * Did the caller's predicate ask about registered state?
+ *
+ * Walks composites, because `allOf[{net}, {state}]` asks about state just as much as a bare
+ * `{state}` does — and the gap it reveals is the same one either way.
+ */
+function declaresState(predicate: Predicate): boolean {
+  if (predicate.kind === PredicateKind.STATE) return true;
+  if (predicate.kind === PredicateKind.ALL_OF || predicate.kind === PredicateKind.ANY_OF) {
+    return predicate.predicates.some(declaresState);
+  }
+  if (predicate.kind === PredicateKind.NOT) return declaresState(predicate.predicate);
+  return false;
 }
 
 export const ACT_TOOLS: ToolDef[] = [
@@ -515,6 +533,12 @@ export const ACT_TOOLS: ToolDef[] = [
         .describe(
           'Channels that DISAGREE about this action — the UI advanced while its write failed, a success signal fired over a failed request, a response changed nothing, a duplicate fired, a request never settled. OMITTED when clean. Treat any entry as a finding even when the verdict is green: a passing assertion and a contradicted channel is exactly the false green this exists to catch.',
         ),
+      instrumentationGaps: z
+        .array(z.unknown())
+        .optional()
+        .describe(
+          'What the APP did not tell Reticle, and the one change that would fix it — each entry is { kind, missing, cost, fix, source?, ref? }. Reported ONLY where an absence made THIS verdict weaker (a red that cannot name a file:line, a state assertion with no registered store, a DOM change no signal announced, a route change nothing signalled); never a survey of the page, so an entry is always work worth doing now. OMITTED when the app told Reticle everything it needed. Applying `fix` makes every later verdict on this app stronger, not just this one.',
+        ),
       honesty: z
         .unknown()
         .describe(
@@ -778,6 +802,21 @@ export const ACT_TOOLS: ToolDef[] = [
             repeated: repeatedRequestLabels(windowEvents),
           },
         });
+        // Computed once: the verdict block reports it, and the instrumentation gaps are a second
+        // reading of the same evidence rather than a new observation.
+        const actionSummary = causalSummary(windowEvents, { stateUnwatched });
+        const gaps = gapsForAction({
+          pass: verdict.pass,
+          proved: decision.verifiedReason === VerifiedReason.PROVED,
+          actedSource,
+          ref: asString(args['ref']),
+          stateAsked: declaresState(until),
+          stateUnwatched,
+          domMutated: (session.lastAct.effect().mutatedWithin ?? 0) > 0,
+          signalsFired: actionSummary.signals.length,
+          routeChanged: actionSummary.route !== undefined,
+          routeSignalFired: actionSummary.signals.some((name) => name.startsWith('route')),
+        });
         return withControl(session, {
           ...decision,
           effect: leanActResult(actResult.result),
@@ -792,7 +831,10 @@ export const ACT_TOOLS: ToolDef[] = [
           ...(capsuleSaved === undefined ? {} : { capsuleSaved }),
           // The window cannot say whether anything was WATCHING state — that is a level fact the
           // session holds. Without it an empty `stateDiffs` reads as "the app changed nothing".
-          summary: causalSummary(windowEvents, { stateUnwatched }),
+          summary: actionSummary,
+          // What the APP did not tell Reticle, and the one change that would fix it. Reported only
+          // where an absence made this very verdict weaker — never as a survey of the page.
+          ...(gaps.length > 0 ? { instrumentationGaps: gaps } : {}),
           // Cross-channel disagreement, reported WITH the action that caused it.
           //
           // This is the one finding here a human structurally cannot make — they watch one channel,

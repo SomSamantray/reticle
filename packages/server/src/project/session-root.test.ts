@@ -22,7 +22,7 @@ function deps(options: { projectId?: string; resolveThrows?: boolean; wired?: bo
       ? {}
       : {
           artifactRootFor: (projectId: string | undefined) =>
-            projectId === 'acme-9f3c'
+            'acme-9f3c' === projectId
               ? { root: PROJECT_ROOT, reason: ArtifactRootReason.MATCHED_PROJECT }
               : { root: DAEMON_ROOT, reason: ArtifactRootReason.NO_MATCH },
         }),
