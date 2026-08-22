@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { coverageRegressed, observabilityOf } from '../honesty/observability.js';
 import { ReticleCommand, SnapshotMode } from '@reticlehq/core';
 import { ReticleTool } from './tool-names.js';
 import type { ToolDef, ToolDeps } from './tools.js';
@@ -86,6 +87,18 @@ export const COVERAGE_TOOLS: ToolDef[] = [
         .describe(
           'True when verification is NOT finished for a reason driving more controls cannot fix — instrumentationGaps is non-empty. Present only when true, so its absence is not a claim.',
         ),
+      observability: z
+        .object({ driven: z.number(), observable: z.number(), percent: z.number().optional() })
+        .optional()
+        .describe(
+          'Of the controls you DROVE, how many Reticle could fully observe. `untouched` above is work left for you; this is work left in the APP, and driving more controls does not move it. `percent` is OMITTED when nothing was driven, because 0/0 is not 100%.',
+        ),
+      observabilityRegressed: z
+        .object({ was: z.number(), now: z.number() })
+        .optional()
+        .describe(
+          'This project has previously reached a HIGHER observability than this run did. Usually means an assertion or an instrumented path was removed — the cheapest way to stop a gap firing is to stop asserting the thing that revealed it. Present only when a drop is real and the run was large enough to compare.',
+        ),
     },
     handler: async (deps: ToolDeps, args) => {
       const sessionId = asString(args['sessionId']);
@@ -111,12 +124,22 @@ export const COVERAGE_TOOLS: ToolDef[] = [
       // first without the second is how an agent finishes a pass believing it verified something the
       // app was never able to confirm.
       const gaps = session.gaps?.open() ?? [];
+      // The number, and the floor under it, together. A coverage figure that can only ever be
+      // reported and never contradicted is one an agent learns to satisfy rather than to earn.
+      const observability = observabilityOf(session.actedRefs(), gaps);
+      const best = await deps.project.bestObservability();
+      const regressed = coverageRegressed(best, observability);
+      if (observability.percent !== undefined) {
+        await deps.project.raiseObservability(observability.percent);
+      }
       return {
         total: parseControls(tree).length,
         exercised,
         untouched,
         ...(droveGone > 0 ? { alsoDroveGone: droveGone } : {}),
         ...(gaps.length > 0 ? { instrumentationGaps: gaps, unproven: true } : {}),
+        observability,
+        ...(regressed === undefined ? {} : { observabilityRegressed: regressed }),
       };
     },
   },
