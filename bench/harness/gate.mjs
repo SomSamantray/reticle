@@ -198,7 +198,17 @@ if (analysis !== null) {
   // The same number against a fixed point, so accumulation cannot hide behind a moving baseline.
   const refRow = referenceRow();
   const refVe = refRow?.per_tool?.reticle?.ve ?? null;
-  if (refVe !== null && ve !== null) {
+  // The fixed point needs the same provenance the moving one does, and for a stronger reason: this
+  // comparison can FAIL the gate on its own, so a reference measured by the old instrument could
+  // fail an honest run outright, or absorb real drift and pass one that should not.
+  const refProvenance = provenanceVerdict({ baseline: refRow });
+  if (refVe !== null && ve !== null && !refProvenance.ok) {
+    scorecard.push([
+      `Observe · efficiency vs ${REFERENCE_VERSION}`,
+      '—',
+      'not comparable — reference predates the current harness',
+    ]);
+  } else if (refVe !== null && ve !== null) {
     const drift = ((ve - refVe) / refVe) * 100;
     scorecard.push([
       `Observe · efficiency vs ${REFERENCE_VERSION}`,
