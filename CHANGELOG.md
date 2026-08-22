@@ -4,6 +4,14 @@ All notable changes to the **`@reticlehq/*`** packages are documented here (each
 
 ## [Unreleased]
 
+### Added
+
+- **`@reticlehq/core` + `@reticlehq/server` — a signal assertion can now say how many times, not just whether.** `{ kind: "signal", name: "order:placed", count: 1 }` asserts exact cardinality, the same field and the same semantics `net` has carried. It closes the one defect class no state-only oracle can reach: a handler wired twice fires the signal twice and leaves the store in exactly the right shape, so presence is green on both the working version and the broken one. The wrong-name variant is the same blind spot from the other side — the intended signal fires once beside a mistyped sibling — and only a count scoped to the matched name tells those apart.
+
+  **Omitting `count` still means presence**, unchanged for every existing caller, and `count: 0` is a claim of its own: the signal never fired. Collapsing those two onto each other would quietly turn "this must NOT fire" into "this must fire at least once", which is the failure the field exists to prevent.
+
+  One comparison, not two. `net` and `signal` now share the cardinality check, including the part that matters most in practice: an over-count is final the moment it is seen, because a window only accumulates and a count cannot come back down, so a double-fire is reported immediately instead of after the caller's whole budget. A recorded flow keeps the count as `signalCount`, gated on settle for the same reason net's is — a wait-until-true reader is satisfied by the first fire, before the duplicate arrives.
+
 ### Fixed
 
 - **`@reticlehq/server` — a cloud call that stalls no longer hangs the tool call waiting on it.** Node's `fetch` has no default timeout: a connection that opens and then goes quiet never settles, and every cloud request in the server was awaited without one. The worst of them sat inside `reticle_flow_verify` on the `verify: 'server'` path, where a stalled hosted runner meant an MCP call that simply never returned — the failure mode this product treats as its worst, because an agent waiting on a tool has no way to notice, retry, or report. The same absence made every `reticle cloud …` subcommand able to sit at a blank terminal indefinitely.
