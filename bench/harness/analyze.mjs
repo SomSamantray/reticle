@@ -3,6 +3,7 @@
 // winners. Pure arithmetic over measured rows — no synthetic data.
 import { readFileSync, writeFileSync } from 'node:fs';
 import { execSync } from 'node:child_process';
+import { toolsMeasured } from './tool-coverage.mjs';
 
 /**
  * Which commit produced these numbers.
@@ -26,7 +27,11 @@ function headSha() {
 }
 
 const rows = JSON.parse(readFileSync('bench/raw/observation-results.json', 'utf8'));
-const TOOLS = ['playwright', 'devtools', 'reticle', 'agentbrowser', 'playwrightcli'];
+// The columns this analysis KNOWS ABOUT, in report order. Which of them a run actually measured is
+// decided by BENCH_TOOLS, and iterating the full list regardless is how two tools that never ran
+// were recorded as having caught nothing across the whole grid. See tool-coverage.mjs.
+const ALL_TOOLS = ['playwright', 'devtools', 'reticle', 'agentbrowser', 'playwrightcli'];
+const TOOLS = toolsMeasured(rows, ALL_TOOLS);
 const measured = rows.filter((r) => r.verdict !== 'NOT MEASURED');
 
 const mean = (a) => (a.length ? a.reduce((x, y) => x + y, 0) / a.length : null);
@@ -41,13 +46,17 @@ const pct = (a, p) => {
   const s = [...a].sort((x, y) => x - y);
   return s[Math.min(s.length - 1, Math.ceil((p / 100) * s.length) - 1)];
 };
-const round = (x) => (x === null ? null : Math.round(x));
+const round = (x) => (null === x ? null : Math.round(x));
 
 const perTool = {};
 for (const tool of TOOLS) {
   const tr = measured.filter((r) => r.tool === tool);
-  const toks = tr.map((r) => r.tokens_o200k).filter((x) => x != null);
-  const lats = tr.map((r) => r.latency_ms).filter((x) => x != null);
+  // Spelled out rather than `!= null`. The loose form was the right INTENT — reject null and
+  // undefined, keep 0 — and tightening it to `!== null` alone would let an undefined cell into
+  // the average as NaN, which is the failure this file is least able to notice.
+  const present = (x) => x !== null && x !== undefined;
+  const toks = tr.map((r) => r.tokens_o200k).filter(present);
+  const lats = tr.map((r) => r.latency_ms).filter(present);
   // detection confusion vs expected_detect
   let tp = 0,
     tn = 0,
@@ -113,8 +122,11 @@ const out = {
   layer: 'A (observation cost)',
   total_cells: rows.length,
   measured_cells: measured.length,
+  // Named rather than silently omitted: a reader of this file should be able to tell a column that
+  // was not run from a column that ran and scored nothing.
+  tools_not_run: ALL_TOOLS.filter((t) => !TOOLS.includes(t)),
   not_measured: rows
-    .filter((r) => r.verdict === 'NOT MEASURED')
+    .filter((r) => 'NOT MEASURED' === r.verdict)
     .map((r) => `${r.scenario}/${r.tool}`),
   per_tool: perTool,
   per_scenario: perScenario,

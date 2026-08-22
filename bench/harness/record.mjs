@@ -2,7 +2,12 @@
 // Usage: node bench/harness/record.mjs "<version-label>" "<note>"
 // version-label + note are the only free text; all numbers come from the raw result files.
 import { readFileSync, appendFileSync, existsSync } from 'node:fs';
+import { HARNESS_REVISION } from './baseline-provenance.mjs';
 import { execSync } from 'node:child_process';
+// Per-tool denominator = real-regression scenarios this tool actually MEASURED. A NOT MEASURED
+// scenario is excluded rather than counted as a miss; a tool with no cell at all is excluded for the
+// stronger reason that there is nothing there to have measured. See tool-coverage.mjs.
+import { measuredRealRegressions } from './tool-coverage.mjs';
 
 const version = process.argv[2] ?? 'unlabeled';
 const note = process.argv[3] ?? '';
@@ -61,7 +66,7 @@ function layerCBlock() {
   const selector = readRaw('bench/raw/replay-detect.json');
   const consequence = readRaw('bench/raw/replay-detect-consequence.json');
   const stateOracle = readRaw('bench/raw/replay-detect-state.json');
-  if (cost === null && selector === null && consequence === null && stateOracle === null) {
+  if (null === cost && null === selector && null === consequence && null === stateOracle) {
     return null;
   }
   return {
@@ -75,14 +80,6 @@ function layerCBlock() {
   };
 }
 
-// Per-tool denominator = real-regression scenarios (expected_detect true) that this tool
-// actually MEASURED (NOT MEASURED scenarios like cross-component are excluded, not counted as misses).
-function measuredRealRegressions(tool) {
-  return Object.values(a.per_scenario).filter(
-    (s) => s.expected_detect === true && s.by_tool?.[tool]?.verdict !== 'NOT MEASURED',
-  ).length;
-}
-
 let sha = 'nogit';
 try {
   sha = execSync('git rev-parse --short HEAD', { encoding: 'utf8' }).trim();
@@ -92,7 +89,7 @@ try {
 
 const perTool = {};
 for (const [tool, v] of Object.entries(a.per_tool)) {
-  const realRegressions = measuredRealRegressions(tool);
+  const realRegressions = measuredRealRegressions(a.per_scenario, tool);
   const rcr = realRegressions ? +(v.true_positives / realRegressions).toFixed(3) : null;
   const ve = v.avg_tokens_o200k
     ? +(v.true_positives / (v.avg_tokens_o200k / 1000)).toFixed(2)
@@ -113,12 +110,16 @@ const layerC = layerCBlock();
 const row = {
   version,
   note,
+  // Which instrument measured this. The gate refuses a baseline recorded by a different one, because
+  // comparing across harness revisions reports the change in the harness as a change in the product.
+  harness_revision: HARNESS_REVISION,
   date: new Date().toISOString().slice(0, 10),
   git_sha: sha,
-  layer: layerC === null ? 'A' : 'A+C',
+  layer: null === layerC ? 'A' : 'A+C',
   measured_cells: a.measured_cells,
   total_cells: a.total_cells,
   not_measured: a.not_measured,
+  ...(a.tools_not_run?.length > 0 ? { tools_not_run: a.tools_not_run } : {}),
   per_tool: perTool,
   ...(layerC !== null ? { layer_c: layerC } : {}),
 };
