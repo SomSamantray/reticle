@@ -72,7 +72,7 @@ describe('presenter HUD shell', () => {
     const deco = document.querySelector<HTMLElement>('.reticle-hud-deco');
     expect(deco).not.toBeNull();
     expect(getComputedStyle(deco as Element).visibility).toBe('visible');
-    (document.querySelector('[data-reticle-min-btn]') as HTMLElement | null)?.click();
+    document.querySelector<HTMLElement>('[data-reticle-min-btn]')?.click();
     expect(getComputedStyle(deco as Element).visibility).toBe('hidden');
     (document.querySelector('[data-reticle-fab]') as HTMLElement).click();
     expect(getComputedStyle(deco as Element).visibility).toBe('visible');
@@ -113,7 +113,7 @@ describe('presenter HUD shell', () => {
     p.sessionStart();
     // A session now starts EXPANDED (autoOpenChat defaults ON), so collapse to reach the FAB this
     // test is about. The behaviour under test — a drag must not be read as a click — is unchanged.
-    (document.querySelector('[data-reticle-min-btn]') as HTMLElement | null)?.click();
+    document.querySelector<HTMLElement>('[data-reticle-min-btn]')?.click();
     const fab = document.querySelector('[data-reticle-fab]');
     const dock = document.querySelector('[data-reticle-dock]');
     expect(fab).not.toBeNull();
