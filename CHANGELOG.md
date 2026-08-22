@@ -4,7 +4,23 @@ All notable changes to the **`@reticlehq/*`** packages are documented here (each
 
 ## [Unreleased]
 
+### Added
+
+- **`@reticlehq/server` — a client that registers Reticle and never asks for the tools is now a state `status` can name.** Some MCP hosts register the server, start it, and then never send `tools/list` until the client is restarted. The agent has no Reticle tools, the user has a product that does nothing, and from our side that install is byte-identical to one somebody wired and abandoned: daemon idle, no sessions, nothing to report. Reported from the field, and the answer is always the same one nobody could have known to try.
+
+  `reticle status` now carries `mcpClient`, and it distinguishes three states rather than two: nothing has ever started the MCP server on this port, a client started it and never listed the tools, or the client side is healthy. The middle one comes with the sentence that fixes it — restart your MCP client — and the healthy one comes with nothing at all, because advice printed beside a working install reads as though something is wrong.
+
+  **Both bits are records of something that happened, not readings of a config file.** A registration entry proves somebody wrote a line of JSON; it does not prove any client ever read it, which is the whole question here. So the proxy records that it was started and that a `tools/list` arrived, durably per port, and the diagnosis says out loud what it cannot see: which client asked, and anything that happened before the record existed. An honest "here is what I can see, here is what to check" beats a confident wrong no.
+
+  The minimal attach contract a harness author has to meet is now written down in [`docs/platform-integration.md`](docs/platform-integration.md), including `reticle_tools` + `reticle_run` as the way a host with a tool-count cap still reaches the whole surface.
+
 ### Fixed
+
+- **`@reticlehq/browser` + `@reticlehq/server` — a page read that stopped early can no longer be reported as a page with nothing in it.** The snapshot walk stops at its node cap and returns a document-order prefix with `truncated: true`. That flag has always been honest and has never been actionable: it says the read stopped, not _where_, so nothing could finish it. A caller received half a page and drew a conclusion from it — and the conclusions that break this way are the negative ones. "No error is shown", "the row is gone", "nothing on screen disagrees" are claims about the whole page, and half a page cannot support one. The record that would have contradicted them may simply have been past the cut.
+
+  The walk now names its own frontier: the refs of the subtrees it never entered. A cut is therefore recoverable — re-read each branch at its own path and the union is the whole tree — and the completion loop that does this is bounded on both axes, in reads and in rounds, because an unbounded recursion over a hostile DOM is its own defect. When the frontier itself overflows, the read says the tree **cannot** be assembled rather than shortening the list and looking finished.
+
+  **`reticle_reconcile` refuses instead of returning an empty comparison over a page it could not finish**, and names what stopped it. The asymmetry is deliberate and the whole point: a mismatch found in a partial page is still found — one witness proves presence — while an empty result is a universal claim. So the positive keeps working and only the negative is refused. Absence of evidence is not reportable as evidence of absence.
 
 - **`@reticlehq/server` — a verdict could cite evidence from a page that no longer exists.** An observation window was scoped by time and by buffer capacity and by nothing else, so it could still hold the network calls, console errors and signals of a document a full navigation or a reload had already thrown away — and any of them could be named as the cause of an action taken now. Reported from the field with a cited failing request that named a database row which had since been deleted: true about the bytes, false about the world, which is the worst kind of wrong a verification tool can be.
 
@@ -19,6 +35,12 @@ All notable changes to the **`@reticlehq/*`** packages are documented here (each
   Every cloud request now goes through one client with a bounded budget. It is one budget, not eight, because they are all small JSON exchanges against the same API — with the single exception of the hosted verification submit, which legitimately blocks while a real browser runs the suite and so carries its own longer, still-finite budget rather than dragging the common one up to fit.
 
   **A timeout reads as a timeout.** A bare `AbortError` reaching a user or an agent is a riddle, so the abort is turned into a sentence that names the request, says the server accepted the connection and never answered, and points at the environment variable to check — ending with the fact that matters most to somebody blocked: verification works locally without cloud. Where the cloud was already best-effort, a timeout still degrades to local instead of failing the work.
+
+- **`@reticlehq/core` + `@reticlehq/server` + `@reticlehq/browser` — one name for one storage area.** Three files described the same three areas in three different vocabularies: core defined the enum and fed it to the `STORAGE_CHANGED` payload, the storage tool re-declared the same values as a fresh literal list, and the browser observer compared against a bare string two lines after using the enum correctly for its siblings. They did not agree, and the one that disagreed was the enum every other file was supposed to be reading from.
+
+  Nothing had broken yet, because the cookie member had no consumers at all — which is precisely what let it drift for free. The moment anything read it, Reticle would have minted an area its own tool refused, and an agent taking the value off the wire contract and handing it back to `reticle_storage` is the ordinary way to use these tools. Being told your input is invalid, by the system that just produced it, is not a failure an agent can diagnose.
+
+  The tool now builds its accepted areas from the contract instead of restating them, and the observer matches by the enum. The published spelling does not change: the outlier was the one with no callers.
 
 ### Removed
 
