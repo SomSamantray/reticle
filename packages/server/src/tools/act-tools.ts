@@ -29,7 +29,7 @@ import { causalSummary } from '../capsule/causal-summary.js';
 import { findContradictions } from '../events/contradictions.js';
 import { gapsForAction } from '../honesty/instrumentation-gaps.js';
 import { noteSessionGaps } from '../honesty/gap-ledger.js';
-import { declaresState } from '../events/predicate-shape.js';
+import { declaresState } from '../events/predicate-asks.js';
 import { isStateUnwatched } from '../honesty/blind-spots.js';
 import {
   inFlightRequestLabels,

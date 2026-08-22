@@ -1,7 +1,7 @@
 import { BlindSpotKind, CaptureLoss, PredicateKind } from '@reticlehq/core';
 import { gapsForAction } from '../honesty/instrumentation-gaps.js';
 import { noteSessionGaps } from '../honesty/gap-ledger.js';
-import { declaresState } from '../events/predicate-shape.js';
+import { declaresState } from '../events/predicate-asks.js';
 import { isStateUnwatched } from '../honesty/blind-spots.js';
 import type { InstrumentationGap } from '@reticlehq/core';
 import type { Predicate } from '../events/predicate.js';

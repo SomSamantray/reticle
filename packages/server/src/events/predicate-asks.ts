@@ -9,6 +9,12 @@ import type { Predicate } from './predicate-schema.js';
  *
  * Lives here rather than at a call site because both the act path and the assert path need it, and
  * two walkers over one predicate tree is two chances to disagree about what counts as asking.
+ *
+ * NOT in `predicate-schema.ts` next to `predicateFieldsFor`, where it would otherwise belong: five
+ * open contributor PRs are queued on that file and on `predicate-eval.ts`, and a one-function import
+ * is not worth handing five people a conflict. Named `predicate-asks` rather than `predicate-shape`
+ * because `predicate-shape.test.ts` already exists and is about something else entirely — a file
+ * that reads as the subject of an unrelated test is a half-hour somebody loses later.
  */
 export function declaresState(predicate: Predicate): boolean {
   if (predicate.kind === PredicateKind.STATE) return true;
