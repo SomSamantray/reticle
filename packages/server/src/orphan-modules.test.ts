@@ -20,6 +20,9 @@ const SRC = join(__dirname);
 
 /** Modules with no production importer, each with the reason it is allowed to stay. */
 const DECLARED_UNWIRED: Record<string, string> = {
+  'project/memory-fs.ts':
+    'test-only in-memory FileSystemPort. Extracted after a third spec hand-rolled its own copy; ' +
+    'imported by specs, which this scan deliberately does not count as production importers.',
   'capsule/minimize.ts':
     'Pure prefix-trim for bug capsules, unit-tested. Ready to wire into capsule save; not yet called.',
   'flows/flow-report.ts':
