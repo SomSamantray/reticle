@@ -35,8 +35,15 @@ export interface ActionInstrumentationFacts {
   pass: boolean;
   /** True when the outcome was positively PROVED rather than inferred. */
   proved?: boolean;
-  /** The source of the element that was driven, when it carries one. */
-  actedSource?: { file: string; line: number } | undefined;
+  /**
+   * Does Reticle know a `file:line` for what this verdict is about?
+   *
+   * A boolean rather than the source itself, deliberately: the act path holds a `{file, line}` and
+   * the assert path holds a formatted string it remembered from the last act. The gap does not care
+   * which — only whether the agent can be pointed at code — and taking the shape would make one of
+   * the two callers convert for no reason.
+   */
+  sourceKnown: boolean;
   /** The ref that was driven, for the report. */
   ref?: string | undefined;
   /** Did the caller's predicate ask about registered state? */
@@ -58,7 +65,7 @@ export function gapsForAction(facts: ActionInstrumentationFacts): Instrumentatio
 
   // A red verdict names the control and cannot name the line that renders it. That is the round trip
   // the agent is about to spend, and the one a build plugin removes permanently.
-  if (!facts.pass && facts.actedSource === undefined) {
+  if (!facts.pass && !facts.sourceKnown) {
     gaps.push(
       instrumentationGap(
         InstrumentationGapKind.NO_SOURCE_MAPPING,

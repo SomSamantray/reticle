@@ -28,7 +28,8 @@ import { parsePredicate } from '../events/predicate-parse.js';
 import { causalSummary } from '../capsule/causal-summary.js';
 import { findContradictions } from '../events/contradictions.js';
 import { gapsForAction } from '../honesty/instrumentation-gaps.js';
-import type { Predicate } from '../events/predicate-schema.js';
+import { declaresState } from '../events/predicate-shape.js';
+import { isStateUnwatched } from '../honesty/blind-spots.js';
 import {
   inFlightRequestLabels,
   repeatedRequestLabels,
@@ -44,7 +45,6 @@ import { buildDivergenceCapsule } from '../capsule/capsule.js';
 import { predicateToExpectedLinks } from '../capsule/predicate-to-links.js';
 import { buildHonestyBlock } from '../honesty/honesty.js';
 import {
-  BlindSpotKind,
   buildCoverageStatement,
   blindSpotsFromState,
   transportGapNote,
@@ -129,21 +129,6 @@ async function resolveActTarget(
   if (!out.ok) return { kind: 'error', message: out.error ?? 'target query failed' };
   const elements = asRecord(out.result)['elements'];
   return resolveTargetRef(Array.isArray(elements) ? elements : []);
-}
-
-/**
- * Did the caller's predicate ask about registered state?
- *
- * Walks composites, because `allOf[{net}, {state}]` asks about state just as much as a bare
- * `{state}` does — and the gap it reveals is the same one either way.
- */
-function declaresState(predicate: Predicate): boolean {
-  if (predicate.kind === PredicateKind.STATE) return true;
-  if (predicate.kind === PredicateKind.ALL_OF || predicate.kind === PredicateKind.ANY_OF) {
-    return predicate.predicates.some(declaresState);
-  }
-  if (predicate.kind === PredicateKind.NOT) return declaresState(predicate.predicate);
-  return false;
 }
 
 export const ACT_TOOLS: ToolDef[] = [
@@ -686,9 +671,7 @@ export const ACT_TOOLS: ToolDef[] = [
         const coverage = buildCoverageStatement(spots);
         // Nothing subscribed ⇒ the state channel is dark, and the summary must say so rather than
         // report an empty diff list that reads like a fact about the app. See CausalSummary.
-        const stateUnwatched = spots.some(
-          (s) => s.kind === BlindSpotKind.UNWATCHED_STATE && s.count > 0,
-        );
+        const stateUnwatched = isStateUnwatched(spots);
         // Only a spot that IMPEACHES the capture belongs in integrity — see impeachesCapture. A
         // structural boundary (virtualized rows, a cross-origin frame) is reported as coverage and
         // must not downgrade a verdict about what WAS observed.
@@ -808,7 +791,7 @@ export const ACT_TOOLS: ToolDef[] = [
         const gaps = gapsForAction({
           pass: verdict.pass,
           proved: decision.verifiedReason === VerifiedReason.PROVED,
-          actedSource,
+          sourceKnown: actedSource !== undefined,
           ref: asString(args['ref']),
           stateAsked: declaresState(until),
           stateUnwatched,

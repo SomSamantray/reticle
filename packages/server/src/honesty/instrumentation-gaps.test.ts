@@ -4,7 +4,7 @@ import { gapsForAction, type ActionInstrumentationFacts } from './instrumentatio
 
 const clean: ActionInstrumentationFacts = {
   pass: true,
-  actedSource: { file: 'TripCard.tsx', line: 88 },
+  sourceKnown: true,
   stateAsked: false,
   stateUnwatched: false,
   domMutated: false,
@@ -28,11 +28,11 @@ describe('gapsForAction', () => {
    */
   describe('only fires when the absence changed the answer', () => {
     it('says nothing about a missing source mapping on a verdict that passed', () => {
-      expect(kinds({ pass: true, actedSource: undefined })).toEqual([]);
+      expect(kinds({ pass: true, sourceKnown: false })).toEqual([]);
     });
 
     it('reports it on a verdict that did NOT pass, where the line is what the agent wants next', () => {
-      expect(kinds({ pass: false, actedSource: undefined })).toEqual([
+      expect(kinds({ pass: false, sourceKnown: false })).toEqual([
         InstrumentationGapKind.NO_SOURCE_MAPPING,
       ]);
     });
@@ -78,7 +78,7 @@ describe('gapsForAction', () => {
   });
 
   it('carries the ref and the remedy, so the agent can act without another call', () => {
-    const [gap] = gapsForAction({ ...clean, pass: false, actedSource: undefined, ref: 'e12' });
+    const [gap] = gapsForAction({ ...clean, pass: false, sourceKnown: false, ref: 'e12' });
     expect(gap?.ref).toBe('e12');
     expect(gap?.fix).toContain('plugin');
     expect(gap?.cost.length ?? 0).toBeGreaterThan(0);
@@ -88,7 +88,7 @@ describe('gapsForAction', () => {
     expect(
       kinds({
         pass: false,
-        actedSource: undefined,
+        sourceKnown: false,
         domMutated: true,
         signalsFired: 0,
         routeChanged: true,
