@@ -4,6 +4,8 @@ All notable changes to the **`@reticlehq/*`** packages are documented here (each
 
 ## [Unreleased]
 
+## [2.11.0] — 2026-08-22
+
 ### Added
 
 - **`@reticlehq/core` + `@reticlehq/server` — an action now reports what the APP did not tell Reticle, and the one change that would fix it.** Reticle has always answered "could I see it?" honestly: an unobservable channel downgrades a verdict rather than passing it. It has never answered the other half — _what would I need in order to see it?_ `reticle_act_and_wait` and `reticle_assert` now carry `instrumentationGaps`, each entry `{ kind, missing, cost, fix, source?, ref? }`: a control driven with no source mapping, a state assertion against an app that registers no store, a DOM change no signal announced, a route change nothing signalled.
