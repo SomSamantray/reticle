@@ -48,14 +48,15 @@ export async function healFlow(
   const projectId = sessionProjectId(deps, asString(args['sessionId']));
   const loaded = await flowsForSession(deps, projectId).flows.load(name, projectId);
   if (!loaded.ok) {
+    const loadErrorMessage = flowErrorMessage(loaded.code, loaded.message);
     return {
       name,
       status: HealStatus.ERROR,
       applied: false,
       proposals: [],
       changed: [],
-      message: flowErrorMessage(loaded.code, loaded.message),
-      error: { code: loaded.code, message: flowErrorMessage(loaded.code, loaded.message) },
+      message: loadErrorMessage,
+      error: { code: loaded.code, message: loadErrorMessage },
     };
   }
 

@@ -66,7 +66,7 @@ function describeParseFailure(error: ZodError, name: string, filePath: string): 
         ? issue.path.join('.')
         : 'the flow';
   const detail =
-    'keys' in issue
+    'unrecognized_keys' === issue.code
       ? `unknown field(s) ${issue.keys.map((k) => `"${k}"`).join(', ')}`
       : issue.message;
   return `flow "${name}" (${filePath}) — ${where}: ${detail}`;
