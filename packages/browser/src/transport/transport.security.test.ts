@@ -98,7 +98,9 @@ describe('Transport security', () => {
   });
 
   it('redacts and serializes arbitrary command results', async () => {
-    const value: Record<string, unknown> = { password: 'secret', count: 2n };
+    // BigInt(2), not 2n: the browser package compiles to ES2017 for webpack 4 (issue #680),
+    // and BigInt literals need ES2020. Same runtime value; tests do not ship.
+    const value: Record<string, unknown> = { password: 'secret', count: BigInt(2) };
     value['self'] = value;
     const transport = new Transport({
       url: 'ws://localhost/reticle',
