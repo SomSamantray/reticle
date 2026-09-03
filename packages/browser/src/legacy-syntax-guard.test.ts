@@ -105,11 +105,19 @@ describe('published SDK dist stays parseable by webpack 4', () => {
   it.each([
     ['browser', BROWSER_DIST],
     ['core', CORE_DIST],
-  ] as const)('%s dist carries no nullish, optional-chain, or logical-assignment syntax', (pkg, dist) => {
-    expect(existsSync(dist), `${pkg} dist is missing — run pnpm build before test:unit`).toBe(true);
-    expect(jsFiles(dist).length, `${pkg} dist holds no scannable files — the guard would pass vacuously`).toBeGreaterThan(0);
-    expect(scanDistForModernSyntax(dist)).toEqual([]);
-  });
+  ] as const)(
+    '%s dist carries no nullish, optional-chain, or logical-assignment syntax',
+    (pkg, dist) => {
+      expect(existsSync(dist), `${pkg} dist is missing — run pnpm build before test:unit`).toBe(
+        true,
+      );
+      expect(
+        jsFiles(dist).length,
+        `${pkg} dist holds no scannable files — the guard would pass vacuously`,
+      ).toBeGreaterThan(0);
+      expect(scanDistForModernSyntax(dist)).toEqual([]);
+    },
+  );
 
   it('the scanner sees through comments and strings to code-position tokens', () => {
     // A fixture, not dist: proves the guard is red-capable without depending on a broken build.
@@ -126,13 +134,11 @@ describe('published SDK dist stays parseable by webpack 4', () => {
       'opts.flag &&= ready;',
     ].join('\n');
     const code = stripNonCode(fixture);
-    expect(MODERN_SYNTAX_TOKENS.filter((t) => t.re.test(code)).map((t) => t.name).sort()).toEqual([
-      '&&=',
-      '?.',
-      '??',
-      '??=',
-      '||=',
-    ]);
+    expect(
+      MODERN_SYNTAX_TOKENS.filter((t) => t.re.test(code))
+        .map((t) => t.name)
+        .sort(),
+    ).toEqual(['&&=', '?.', '??', '??=', '||=']);
   });
 
   it.each(['browser', 'core'] as const)('%s resolves a target at or below ES2017', (pkg) => {
@@ -142,7 +148,11 @@ describe('published SDK dist stays parseable by webpack 4', () => {
     const config = JSON.parse(
       readFileSync(join(HERE, '..', '..', pkg, 'tsconfig.json'), 'utf8'),
     ) as { compilerOptions?: { target?: string } };
-    const resolved = (config.compilerOptions?.target ?? base.compilerOptions?.target ?? '').toLowerCase();
+    const resolved = (
+      config.compilerOptions?.target ??
+      base.compilerOptions?.target ??
+      ''
+    ).toLowerCase();
     expect(
       ['es3', 'es5', 'es2015', 'es2016', 'es2017'].includes(resolved),
       `${pkg} resolves target ${resolved || '(unset)'} — the webpack-4 pin must stay at ES2017 or below`,
