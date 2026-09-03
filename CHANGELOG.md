@@ -4,6 +4,10 @@ All notable changes to the **`@reticlehq/*`** packages are documented here (each
 
 ## [Unreleased]
 
+### Fixed
+
+- **`@reticlehq/server` — a pooled lease no longer tells you to reinstall Chromium when the real problem is a missing host shared library.** `chromium.launch` failing with Playwright's "Host system is missing dependencies to run browsers" (e.g. a missing `libnspr4.so`) was matched by the same catch-all regex as a missing browser binary, so the launcher rewrote it into "Chromium is not installed... run `npx playwright install chromium`" — a command that succeeds and fixes nothing, because the binary was never missing. That case is now recognized before the generic check and points at `npx playwright install-deps chromium` instead, pinned to the bundled playwright version the same way the existing hint is.
+
 ## [2.13.1] — 2026-09-02
 
 ### Fixed
