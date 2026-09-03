@@ -1,4 +1,5 @@
 import { asFlowName, type FlowName } from '@reticlehq/core';
+import type { ZodError } from 'zod';
 import {
   AnchorKind,
   DEGRADED_ANCHOR_ROLE,
@@ -39,8 +40,37 @@ export interface Clock {
   now(): number;
 }
 
-/** Discriminated result so callers never branch on free strings. */
-export type FlowResult<T> = { ok: true; value: T } | { ok: false; code: FlowErrorCode };
+/**
+ * Discriminated result so callers never branch on free strings. `message`, when present, is an
+ * actionable detail beyond the code — e.g. which step and which key made a flow file fail to
+ * parse. It is additive: callers that only read `.code` are unaffected.
+ */
+export type FlowResult<T> =
+  { ok: true; value: T } | { ok: false; code: FlowErrorCode; message?: string };
+
+/**
+ * Turn the first issue on a failed FlowFileSchema parse into a sentence naming the flow, the
+ * file, and where the parse broke — so a rejected `expect`/`success` key (or any other schema
+ * mismatch) is diagnosable from the error alone instead of a bare PARSE_FAILED code.
+ */
+function describeParseFailure(error: ZodError, name: string, filePath: string): string {
+  const issue = error.issues[0];
+  if (issue === undefined) return `flow "${name}" (${filePath}) failed to parse`;
+  const [head, index, ...rest] = issue.path;
+  const where =
+    'steps' === head && 'number' === typeof index
+      ? rest.length
+        ? `step ${index} ${rest.join('.')}`
+        : `step ${index}`
+      : issue.path.length
+        ? issue.path.join('.')
+        : 'the flow';
+  const detail =
+    'keys' in issue
+      ? `unknown field(s) ${issue.keys.map((k) => `"${k}"`).join(', ')}`
+      : issue.message;
+  return `flow "${name}" (${filePath}) — ${where}: ${detail}`;
+}
 
 /**
  * The anchor for a DEGRADED step (no resolvable testid). A volatile eXX ref is NEVER persisted —
@@ -918,7 +948,13 @@ export class FlowStore {
       return { ok: false, code: FlowErrorCode.PARSE_FAILED };
     }
     const result = FlowFileSchema.safeParse(parsed);
-    if (!result.success) return { ok: false, code: FlowErrorCode.PARSE_FAILED };
+    if (!result.success) {
+      return {
+        ok: false,
+        code: FlowErrorCode.PARSE_FAILED,
+        message: describeParseFailure(result.error, name, path),
+      };
+    }
     return { ok: true, value: result.data };
   }
 

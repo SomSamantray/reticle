@@ -311,7 +311,7 @@ export const FLOW_TOOLS: ToolDef[] = [
       return deps.flows
         .load(asString(aliasParam(args, 'flowName', ['flow'])['flowName']) ?? '', projectId)
         .then((res) => {
-          if (!res.ok) return { error: flowErrorMessage(res.code), code: res.code };
+          if (!res.ok) return { error: flowErrorMessage(res.code, res.message), code: res.code };
           const { name, ...rest } = res.value;
           return { flowName: name, ...rest };
         });

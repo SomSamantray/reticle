@@ -254,7 +254,7 @@ describe('FlowStore — temp-dir fs, never touches the repo', () => {
     expect(loaded).toEqual({ ok: false, code: FlowErrorCode.PARSE_FAILED });
   });
 
-  it('12: load of a schema-invalid flow (wrong version) returns PARSE_FAILED', async () => {
+  it('12: load of a schema-invalid flow (wrong version) returns PARSE_FAILED with a detail message', async () => {
     await mkdir(reticleDirPaths(root).flows, { recursive: true });
     await writeFile(
       flowPath(root, asFlowName('wrong')),
@@ -262,7 +262,57 @@ describe('FlowStore — temp-dir fs, never touches the repo', () => {
       'utf8',
     );
     const loaded = await store.load('wrong');
-    expect(loaded).toEqual({ ok: false, code: FlowErrorCode.PARSE_FAILED });
+    expect(loaded.ok).toBe(false);
+    if (loaded.ok) return;
+    expect(loaded.code).toBe(FlowErrorCode.PARSE_FAILED);
+    expect(loaded.message).toContain('wrong');
+  });
+
+  it('12b: load of a flow whose step `expect` has an unrecognized key names the flow, the step, and the key', async () => {
+    await mkdir(reticleDirPaths(root).flows, { recursive: true });
+    await writeFile(
+      flowPath(root, asFlowName('bad-expect')),
+      JSON.stringify({
+        version: FLOW_FILE_VERSION,
+        name: 'bad-expect',
+        createdAt: 1,
+        steps: [
+          {
+            tool: 'reticle_act',
+            anchor: { kind: AnchorKind.TESTID, value: 'submit' },
+            expect: { signal: 'x', allOf: [] },
+          },
+        ],
+      }),
+      'utf8',
+    );
+    const loaded = await store.load('bad-expect');
+    expect(loaded.ok).toBe(false);
+    if (loaded.ok) return;
+    expect(loaded.code).toBe(FlowErrorCode.PARSE_FAILED);
+    expect(loaded.message).toContain('bad-expect');
+    expect(loaded.message).toContain('step 0');
+    expect(loaded.message).toContain('allOf');
+  });
+
+  it('12c: load of a flow whose flow-level `success` has an unrecognized key names `success`, not a step', async () => {
+    await mkdir(reticleDirPaths(root).flows, { recursive: true });
+    await writeFile(
+      flowPath(root, asFlowName('bad-success')),
+      JSON.stringify({
+        version: FLOW_FILE_VERSION,
+        name: 'bad-success',
+        createdAt: 1,
+        steps: [{ tool: 'reticle_act', anchor: { kind: AnchorKind.TESTID, value: 'submit' } }],
+        success: { signal: 'x', bogusField: true },
+      }),
+      'utf8',
+    );
+    const loaded = await store.load('bad-success');
+    expect(loaded.ok).toBe(false);
+    if (loaded.ok) return;
+    expect(loaded.message).toContain('success');
+    expect(loaded.message).toContain('bogusField');
   });
 
   it('13: load rejects a traversal name before touching disk', async () => {

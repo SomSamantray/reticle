@@ -54,8 +54,8 @@ export async function healFlow(
       applied: false,
       proposals: [],
       changed: [],
-      message: flowErrorMessage(loaded.code),
-      error: { code: loaded.code, message: flowErrorMessage(loaded.code) },
+      message: flowErrorMessage(loaded.code, loaded.message),
+      error: { code: loaded.code, message: flowErrorMessage(loaded.code, loaded.message) },
     };
   }
 
