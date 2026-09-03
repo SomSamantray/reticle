@@ -58,7 +58,14 @@ export const FlowAnchorSchema = z.discriminatedUnion('kind', [
 ]);
 export type FlowAnchor = z.infer<typeof FlowAnchorSchema>;
 
-/** A post-condition a step asserts (compiled from a structured annotation; optional). */
+/**
+ * A post-condition a step asserts (compiled from a structured annotation; optional).
+ *
+ * Strict: an unrecognized key (a typo, or a predicate kind this schema doesn't model, e.g.
+ * `allOf`) must fail to parse instead of being silently dropped. A loose z.object() here would
+ * quietly discard the extra key and leave the step with a weaker (or empty) assertion than its
+ * author wrote — the flow then replays green against nothing, having proved no real regression.
+ */
 export const FlowExpectSchema = z.object({
   signal: z.string().optional(),
   /**
@@ -126,7 +133,7 @@ export const FlowExpectSchema = z.object({
       hold: z.boolean().optional(),
     })
     .optional(),
-});
+}).strict();
 export type FlowExpect = z.infer<typeof FlowExpectSchema>;
 
 /** One step of a flow: an anchored action (+ optional expectation). */
