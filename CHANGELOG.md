@@ -4,6 +4,10 @@ All notable changes to the **`@reticlehq/*`** packages are documented here (each
 
 ## [Unreleased]
 
+### Fixed
+
+- **`@reticlehq/core` + `@reticlehq/server` — a flow's `expect`/`success` block rejects an unrecognized key instead of silently dropping it.** `FlowExpectSchema` was a plain `z.object(...)`, so a hand-edited flow file with a typo'd or unsupported key (e.g. `expect.allOf`, a typo'd `expect.net.methdo`) parsed successfully with the extra key stripped, leaving the step with a weaker — or empty — assertion than its author wrote; the flow then replayed green having proven nothing. The schema is now strict at every level, and `FlowStore.load()`/`saveFlow()`/`heal()` surface a message naming the flow, the file, the step (or `success`), and the rejected key, instead of a bare parse-failed code. Closes [#671](https://github.com/reticlehq/reticle/issues/671).
+
 ## [2.13.1] — 2026-09-02
 
 ### Fixed
