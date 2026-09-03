@@ -65,7 +65,7 @@ describe('playwrightLauncher', () => {
       // gets far enough to report a missing executable.
       launchRejection = new Error(
         [
-          "browserType.launch: Host system is missing dependencies to run browsers.",
+          'browserType.launch: Host system is missing dependencies to run browsers.',
           '',
           'Please install them with the following command:',
           '',
