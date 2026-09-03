@@ -4,6 +4,10 @@ All notable changes to the **`@reticlehq/*`** packages are documented here (each
 
 ## [Unreleased]
 
+### Fixed
+
+- **`@reticlehq/server` — `init`'s dependency-install step reads as done when the packages already resolve.** The install step reported `[⚠] Install dependencies — step failed` whenever its subprocess exited non-zero, even when `sdkPackagesPresent()` — the same check that already protects downstream wiring — proved the packages were on disk. On a pnpm checkout whose `node_modules` is symlinked into another checkout's `.pnpm` store (a git worktree, or an A/B harness), `pnpm add` fails with `ERR_PNPM_UNEXPECTED_VIRTUAL_STORE` even though nothing is missing, so a correct install read as broken on every re-run. The install step now gets the same `sdkPackagesPresent()` benefit its own downstream wiring already had. `installFailureHint` also names `ERR_PNPM_UNEXPECTED_VIRTUAL_STORE` for the first time, alongside `ERR_PNPM_NO_MATURE_MATCHING_VERSION`. Closes [#683](https://github.com/reticlehq/reticle/issues/683).
+
 ## [2.13.1] — 2026-09-02
 
 ### Fixed
