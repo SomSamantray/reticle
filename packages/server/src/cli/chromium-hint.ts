@@ -64,6 +64,20 @@ export function chromiumInstallCommand(playwrightVersion?: string): string {
 }
 
 /**
+ * The install-deps command, pinned the same way `chromiumInstallCommand` is.
+ *
+ * A missing OS shared library (e.g. `libnspr4.so`) is a different failure from a missing browser
+ * binary: the binary is already there, but Playwright's own host-requirement check refuses to launch
+ * it. `npx playwright install chromium` does nothing for that case — the fix is `install-deps`, and
+ * it needs the same pin `chromiumInstallCommand` needs, for the same reason: unpinned, `npx` can
+ * resolve a different playwright than the one the daemon bundles.
+ */
+export function chromiumInstallDepsCommand(playwrightVersion?: string): string {
+  const pin = playwrightVersion === undefined ? 'playwright' : `playwright@${playwrightVersion}`;
+  return `npx ${pin} install-deps chromium`;
+}
+
+/**
  * Split a resolved executable path into the browsers root and the revision under it, or null.
  *
  * Reading them back off Playwright's own answer is the point. The alternative is reconstructing the
