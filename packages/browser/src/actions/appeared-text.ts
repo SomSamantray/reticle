@@ -8,8 +8,24 @@ const JOIN = ' | ';
 
 const TEXT_NODE = 3;
 
-/** Any letter, in any script — Latin, Cyrillic, CJK, Arabic. */
-const HAS_LETTER = /\p{L}/u;
+/**
+ * Any letter, in any script — Latin, Cyrillic, CJK, Arabic.
+ *
+ * Built from a string, not a literal: a `/\p{L}/u` literal is ES2018 syntax, and tsc never
+ * downlevels regex bodies, so the literal would ride the lowered target straight into dist and
+ * break webpack 4 parsing (issue #680). Construction from a string parses under any grammar;
+ * engines without unicode property escapes take the range fallback instead of throwing. The
+ * fallback covers the letter blocks the product's locales need (Latin, Greek, Cyrillic,
+ * Armenian, Hebrew, Arabic, Hiragana, Katakana, CJK, Hangul); scripts outside it behave as
+ * letterless on those engines only, where the previous bundle did not parse at all.
+ */
+const HAS_LETTER: RegExp = (() => {
+  try {
+    return new RegExp('\\p{L}', 'u');
+  } catch {
+    return /[A-Za-zªµºÀ-ÖØ-öø-ʯ\u0370-\u0373\u0376-\u0377\u037B-\u037D\u037F\u0386\u0388-\u038A\u038C\u038E-\u03A1\u03A3-\u03F5\u03F7-\u0481\u048A-\u052F\u0531-\u0556\u0559\u0560-\u0588\u05D0-\u05EA\u05F0-\u05F2\u0621-\u064A\u066E-\u06D3\u06D5\u06EE-\u06EF\u06FA-\u06FC\u06FF\u3041-\u3096\u309B-\u309F\u30A1-\u30FA\u30FC-\u30FF\u3400-\u4DBF\u4E00-\u9FFF\uAC00-\uD7A3]/;
+  }
+})();
 
 /**
  * A fragment with no letters at all is not the app saying something.
