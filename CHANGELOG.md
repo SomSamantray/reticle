@@ -4,6 +4,10 @@ All notable changes to the **`@reticlehq/*`** packages are documented here (each
 
 ## [Unreleased]
 
+### Fixed
+
+- **`@reticlehq/browser` + `@reticlehq/core` — the published SDK parses on webpack 4 again.** Both packages compiled to ES2022, which emits nullish coalescing, optional chaining and logical assignment verbatim, and `react-scripts` 4 excludes `node_modules` from Babel — so an affected app failed to compile before a session could connect. Both packages now compile to ES2017, and a guard test fails if newer syntax reaches `dist` again. The one construct the target change cannot move, a unicode property escape in the appeared-text detector (regex bodies are never downleveled), is now built from a string with a range fallback for engines without it. Closes [#680](https://github.com/reticlehq/reticle/issues/680).
+
 ## [2.13.1] — 2026-09-02
 
 ### Fixed
