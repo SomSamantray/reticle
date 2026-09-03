@@ -628,7 +628,7 @@ export const FLOW_TOOLS: ToolDef[] = [
         flow,
         session.projectId,
       );
-      if (!res.ok) return { error: flowErrorMessage(res.code), code: res.code };
+      if (!res.ok) return { error: flowErrorMessage(res.code, res.message), code: res.code };
       // If logged in to Reticle, mirror the saved flow to the team's regression suite. Best-effort
       // and non-blocking: the flow is already on disk, so a sync failure never fails the save.
       void syncSavedFlowToCloud(deps, flow, session.projectId);

@@ -129,6 +129,24 @@ describe('FlowFileSchema', () => {
     expect(FlowFileSchema.safeParse(flow).success).toBe(false);
   });
 
+  it('rejects an unrecognized key nested under `expect.net` (strictness applies at every level)', () => {
+    const flow = {
+      version: FLOW_FILE_VERSION,
+      name: 'checkout',
+      createdAt: 1234,
+      steps: [
+        {
+          tool: 'reticle_act',
+          anchor: { kind: AnchorKind.TESTID, value: 'submit' },
+          action: ActionType.CLICK,
+          args: {},
+          expect: { net: { method: 'POST', bogusField: 1 } },
+        },
+      ],
+    };
+    expect(FlowFileSchema.safeParse(flow).success).toBe(false);
+  });
+
   it('rejects a flow-level `success` with an unrecognized key', () => {
     const flow = {
       version: FLOW_FILE_VERSION,

@@ -166,14 +166,15 @@ export async function healFlow(
     projectId,
   );
   if (!written.ok) {
+    const writeErrorMessage = flowErrorMessage(written.code, written.message);
     return {
       name,
       status: HealStatus.ERROR,
       applied: false,
       proposals,
       changed: [],
-      message: flowErrorMessage(written.code),
-      error: { code: written.code, message: flowErrorMessage(written.code) },
+      message: writeErrorMessage,
+      error: { code: written.code, message: writeErrorMessage },
     };
   }
   return {

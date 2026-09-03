@@ -84,6 +84,22 @@ describe('FlowStore.saveFlow — temp-dir fs', () => {
     expect(await store.list()).toEqual([]);
   });
 
+  it('saveFlow of a flow with an unrecognized expect key is rejected with an actionable message', async () => {
+    const malformed = {
+      version: FLOW_FILE_VERSION,
+      name: 'checkout',
+      createdAt: FROZEN,
+      steps: [{ ...clickStep('pay'), expect: { signal: 'x', allOf: [] } }],
+    };
+    const saved = await store.saveFlow(malformed as FlowFile);
+    expect(saved.ok).toBe(false);
+    if (saved.ok) return;
+    expect(saved.code).toBe(FlowErrorCode.PARSE_FAILED);
+    expect(saved.message).toContain('checkout');
+    expect(saved.message).toContain('allOf');
+    expect(await store.list()).toEqual([]);
+  });
+
   it('saveFlow of an empty-steps flow → empty:true, still written', async () => {
     const flow = flowFile('empty', []);
     const saved = await store.saveFlow(flow);

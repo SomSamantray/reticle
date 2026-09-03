@@ -61,10 +61,11 @@ export type FlowAnchor = z.infer<typeof FlowAnchorSchema>;
 /**
  * A post-condition a step asserts (compiled from a structured annotation; optional).
  *
- * Strict: an unrecognized key (a typo, or a predicate kind this schema doesn't model, e.g.
- * `allOf`) must fail to parse instead of being silently dropped. A loose z.object() here would
- * quietly discard the extra key and leave the step with a weaker (or empty) assertion than its
- * author wrote — the flow then replays green against nothing, having proved no real regression.
+ * Strict, at every nesting level: an unrecognized key (a typo, or a predicate kind this schema
+ * doesn't model, e.g. `allOf`, or a typo'd `net`/`console`/`element`/`state` sub-field) must fail
+ * to parse instead of being silently dropped. A loose z.object() here would quietly discard the
+ * extra key and leave the step with a weaker (or empty) assertion than its author wrote — the
+ * flow then replays green against nothing, having proved no real regression.
  */
 export const FlowExpectSchema = z
   .object({
@@ -95,6 +96,7 @@ export const FlowExpectSchema = z
          */
         count: z.number().int().nonnegative().optional(),
       })
+      .strict()
       .optional(),
     /**
      * Console golden end-condition: assert the action logged (or, with absent:true, did NOT log) a
@@ -107,6 +109,7 @@ export const FlowExpectSchema = z
         level: z.string().optional(),
         absent: z.boolean().optional(),
       })
+      .strict()
       .optional(),
     element: z
       .object({
@@ -114,6 +117,7 @@ export const FlowExpectSchema = z
         role: z.string().optional(),
         name: z.string().optional(),
       })
+      .strict()
       .optional(),
     /**
      * Assert a registered store's value — the source of truth no DOM/network read can reach. Compiles
@@ -133,6 +137,7 @@ export const FlowExpectSchema = z
          */
         hold: z.boolean().optional(),
       })
+      .strict()
       .optional(),
   })
   .strict();

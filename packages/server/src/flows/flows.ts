@@ -803,13 +803,17 @@ export class FlowStore {
     // per-project subdir. Both come from the same `pid`, so on-disk location and content always agree.
     const stamped = pid === undefined ? flow : { ...flow, projectId: pid };
     const parsed = FlowFileSchema.safeParse(stamped);
-    if (!parsed.success) return { ok: false, code: FlowErrorCode.PARSE_FAILED };
+    const writePath = flowPath(this.#root, asFlowName(flow.name), pid);
+    if (!parsed.success) {
+      return {
+        ok: false,
+        code: FlowErrorCode.PARSE_FAILED,
+        message: describeParseFailure(parsed.error, flow.name, writePath),
+      };
+    }
     const valid = await this.#linkIntent(parsed.data);
     await this.#fs.mkdir(flowDir(this.#root, pid));
-    await this.#fs.writeFile(
-      flowPath(this.#root, asFlowName(valid.name), pid),
-      this.#serialize(valid),
-    );
+    await this.#fs.writeFile(writePath, this.#serialize(valid));
     return { ok: true, value: this.#summary(valid) };
   }
 
@@ -832,7 +836,13 @@ export class FlowStore {
     if (!isValidFlowName(name)) return { ok: false, code: FlowErrorCode.INVALID_NAME };
     const pid = safeProjectId(projectId);
     const loaded = await this.load(name, pid);
-    if (!loaded.ok) return { ok: false, code: loaded.code };
+    if (!loaded.ok) {
+      return {
+        ok: false,
+        code: loaded.code,
+        ...(loaded.message === undefined ? {} : { message: loaded.message }),
+      };
+    }
     const flow = loaded.value;
 
     // Write back to the SAME file load resolved (nested if it lives there, else legacy flat), so a

@@ -6,8 +6,10 @@ import { join } from 'node:path';
 import {
   asFlowName,
   ActionType,
+  AnchorKind,
   DANGEROUS_ACTION_CONFIRM_ARG,
   EventType,
+  FLOW_FILE_VERSION,
   FlowErrorCode,
   IntentState,
   ReticleCommand,
@@ -195,6 +197,36 @@ describe('reticle_flow_replay handler — temp dir, never touches the repo', () 
     expect(res.status).toBe(ReplayStatus.ERROR);
     expect(res.error?.code).toBe(FlowErrorCode.PARSE_FAILED);
     expect(res.steps).toHaveLength(0);
+  });
+
+  it('a flow with an unrecognized expect key surfaces the flow, step, and key in the error message', async () => {
+    await fs.mkdir(join(root, 'flows'));
+    await fs.writeFile(
+      flowPath(root, asFlowName('bad-expect')),
+      JSON.stringify({
+        version: FLOW_FILE_VERSION,
+        name: 'bad-expect',
+        createdAt: 1,
+        steps: [
+          {
+            tool: 'reticle_act',
+            anchor: { kind: AnchorKind.TESTID, value: 'submit' },
+            expect: { signal: 'x', allOf: [] },
+          },
+        ],
+      }),
+    );
+    const session = scriptedSession(() => ({ elements: [] }));
+    const deps = fakeDeps(fs, root, session);
+
+    const res = (await tool(ReticleTool.FLOW_REPLAY).handler(deps, {
+      flowName: 'bad-expect',
+    })) as FlowReplayResult;
+    expect(res.status).toBe(ReplayStatus.ERROR);
+    expect(res.error?.code).toBe(FlowErrorCode.PARSE_FAILED);
+    expect(res.error?.message).toContain('bad-expect');
+    expect(res.error?.message).toContain('step 0');
+    expect(res.error?.message).toContain('allOf');
   });
 
   it('E: an invalid flow name returns a structured error (no path escape)', async () => {
