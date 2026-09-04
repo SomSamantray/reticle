@@ -8,6 +8,7 @@ import {
   type HelloMessage,
 } from '@reticlehq/core';
 import { Transport } from './transport.js';
+import { at } from '../test-support/array-at.js';
 
 class FakeWebSocket {
   static readonly OPEN = 1;
@@ -119,7 +120,7 @@ describe('Transport security', () => {
     });
     await Promise.resolve();
     await Promise.resolve();
-    const response = JSON.parse(socket?.sent.at(-1) ?? '{}') as {
+    const response = JSON.parse(at(socket?.sent, -1) ?? '{}') as {
       result?: Record<string, unknown>;
     };
     expect(response.result).toEqual({
@@ -145,7 +146,7 @@ describe('Transport security', () => {
       ref: undefined,
       data: { hidden: false, focused: true, reason: 'initial' },
     });
-    const event = JSON.parse(socket?.sent.at(-1) ?? '{}') as {
+    const event = JSON.parse(at(socket?.sent, -1) ?? '{}') as {
       event?: Record<string, unknown>;
     };
     expect(event.event).not.toHaveProperty('ref');
@@ -171,6 +172,6 @@ describe('Transport security', () => {
     });
     await Promise.resolve();
     await Promise.resolve();
-    expect(() => CommandResultSchema.parse(JSON.parse(socket?.sent.at(-1) ?? '{}'))).not.toThrow();
+    expect(() => CommandResultSchema.parse(JSON.parse(at(socket?.sent, -1) ?? '{}'))).not.toThrow();
   });
 });
