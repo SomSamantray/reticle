@@ -4,8 +4,12 @@
     "target": "ES2017",
     "outDir": "./dist",
     "rootDir": "./src",
-    "lib": ["ES2023", "DOM", "DOM.Iterable"]
+    "lib": ["ES2017", "ES2021.WeakRef", "DOM", "DOM.Iterable"]
   },
   "include": ["src/**/*"],
-  "references": [{ "path": "../core" }]
+  "references": [
+    {
+      "path": "../core"
+    }
+  ]
 }

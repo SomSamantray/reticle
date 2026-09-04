@@ -3,7 +3,8 @@
   "compilerOptions": {
     "target": "ES2017",
     "outDir": "./dist",
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "lib": ["ES2017"]
   },
   "include": ["src/**/*"]
 }
