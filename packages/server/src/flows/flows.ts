@@ -1,5 +1,4 @@
 import { asFlowName, type FlowName } from '@reticlehq/core';
-import type { ZodError } from 'zod';
 import {
   AnchorKind,
   DEGRADED_ANCHOR_ROLE,
@@ -26,6 +25,7 @@ import { IntentStore } from '../intent/intent-store.js';
 import type { CompiledProgram, RecordedStep } from './recordings.js';
 import type { FileSystemPort } from '../project/fs-port.js';
 import { flowDir, flowPath, reticleDirPaths, isValidFlowName } from '../project/reticle-dir.js';
+import { describeFlowZodFailure, parseFlowFileText } from './flow-expect-grammar.js';
 
 /**
  * A projectId only scopes storage when it's a safe single path segment (it's stamped from the
@@ -40,37 +40,9 @@ export interface Clock {
   now(): number;
 }
 
-/**
- * Discriminated result so callers never branch on free strings. `message`, when present, is an
- * actionable detail beyond the code — e.g. which step and which key made a flow file fail to
- * parse. It is additive: callers that only read `.code` are unaffected.
- */
+/** Discriminated result so callers never branch on free strings. */
 export type FlowResult<T> =
-  { ok: true; value: T } | { ok: false; code: FlowErrorCode; message?: string };
-
-/**
- * Turn the first issue on a failed FlowFileSchema parse into a sentence naming the flow, the
- * file, and where the parse broke — so a rejected `expect`/`success` key (or any other schema
- * mismatch) is diagnosable from the error alone instead of a bare PARSE_FAILED code.
- */
-function describeParseFailure(error: ZodError, name: string, filePath: string): string {
-  const issue = error.issues[0];
-  if (issue === undefined) return `flow "${name}" (${filePath}) failed to parse`;
-  const [head, index, ...rest] = issue.path;
-  const where =
-    'steps' === head && 'number' === typeof index
-      ? rest.length
-        ? `step ${index} ${rest.join('.')}`
-        : `step ${index}`
-      : issue.path.length
-        ? issue.path.join('.')
-        : 'the flow';
-  const detail =
-    'unrecognized_keys' === issue.code
-      ? `unknown field(s) ${issue.keys.map((k) => `"${k}"`).join(', ')}`
-      : issue.message;
-  return `flow "${name}" (${filePath}) — ${where}: ${detail}`;
-}
+  { ok: true; value: T } | { ok: false; code: FlowErrorCode; detail?: string };
 
 /**
  * The anchor for a DEGRADED step (no resolvable testid). A volatile eXX ref is NEVER persisted —
@@ -803,17 +775,21 @@ export class FlowStore {
     // per-project subdir. Both come from the same `pid`, so on-disk location and content always agree.
     const stamped = pid === undefined ? flow : { ...flow, projectId: pid };
     const parsed = FlowFileSchema.safeParse(stamped);
-    const writePath = flowPath(this.#root, asFlowName(flow.name), pid);
     if (!parsed.success) {
+      // Named, not bare: the load path already says which step and key it choked on, and a save
+      // that refuses in silence sends the caller to the file to guess at what a load would tell it.
       return {
         ok: false,
         code: FlowErrorCode.PARSE_FAILED,
-        message: describeParseFailure(parsed.error, flow.name, writePath),
+        detail: describeFlowZodFailure(parsed.error),
       };
     }
     const valid = await this.#linkIntent(parsed.data);
     await this.#fs.mkdir(flowDir(this.#root, pid));
-    await this.#fs.writeFile(writePath, this.#serialize(valid));
+    await this.#fs.writeFile(
+      flowPath(this.#root, asFlowName(valid.name), pid),
+      this.#serialize(valid),
+    );
     return { ok: true, value: this.#summary(valid) };
   }
 
@@ -836,13 +812,7 @@ export class FlowStore {
     if (!isValidFlowName(name)) return { ok: false, code: FlowErrorCode.INVALID_NAME };
     const pid = safeProjectId(projectId);
     const loaded = await this.load(name, pid);
-    if (!loaded.ok) {
-      return {
-        ok: false,
-        code: loaded.code,
-        ...(loaded.message === undefined ? {} : { message: loaded.message }),
-      };
-    }
+    if (!loaded.ok) return { ok: false, code: loaded.code };
     const flow = loaded.value;
 
     // Write back to the SAME file load resolved (nested if it lives there, else legacy flat), so a
@@ -951,21 +921,7 @@ export class FlowStore {
       };
     }
 
-    let parsed: unknown;
-    try {
-      parsed = JSON.parse(text);
-    } catch {
-      return { ok: false, code: FlowErrorCode.PARSE_FAILED };
-    }
-    const result = FlowFileSchema.safeParse(parsed);
-    if (!result.success) {
-      return {
-        ok: false,
-        code: FlowErrorCode.PARSE_FAILED,
-        message: describeParseFailure(result.error, name, path),
-      };
-    }
-    return { ok: true, value: result.data };
+    return parseFlowFileText(text);
   }
 
   /**

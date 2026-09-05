@@ -41,6 +41,7 @@ import { consultSubjectFor, selectConsulted, type ConsultedMemory } from './flow
 import { log } from '../log.js';
 import type { ToolDeps } from '../tools/tools.js';
 import { flowsForSession } from './flow-store-for-session.js';
+import { FlowParseNote } from './flow-expect-grammar.js';
 
 export function latestRecordedFlow(
   events: ReticleEvent[],
@@ -54,25 +55,19 @@ export function latestRecordedFlow(
   return undefined;
 }
 
-/**
- * Map a structured FlowErrorCode to a legible one-line message for the agent. `detail`, when
- * given (e.g. a FlowResult's `message`), is appended so a specific failure — which step, which
- * key — reaches the agent alongside the generic guidance rather than instead of it.
- */
+/** Map a structured FlowErrorCode to a legible one-line message for the agent. */
 export function flowErrorMessage(code: FlowErrorCode, detail?: string): string {
-  const generic = (() => {
-    switch (code) {
-      case FlowErrorCode.INVALID_NAME:
-        return 'invalid flow name — use a single safe segment (letters/digits/-/_), no path separators';
-      case FlowErrorCode.NOT_FOUND:
-        return 'no such flow on disk — run reticle_flow{action:"list"} to see saved flows';
-      case FlowErrorCode.PARSE_FAILED:
-        return 'flow file is malformed — fix or regenerate it with reticle_flow_save';
-      case FlowErrorCode.NO_RECORDING:
-        return 'no compiled recording by that name — record one (reticle_record{action:"start"|"stop"}) first';
-    }
-  })();
-  return detail !== undefined && detail.length > 0 ? `${generic}: ${detail}` : generic;
+  if (FlowErrorCode.PARSE_FAILED === code && undefined !== detail) return detail;
+  switch (code) {
+    case FlowErrorCode.INVALID_NAME:
+      return 'invalid flow name — use a single safe segment (letters/digits/-/_), no path separators';
+    case FlowErrorCode.NOT_FOUND:
+      return 'no such flow on disk — run reticle_flow{action:"list"} to see saved flows';
+    case FlowErrorCode.PARSE_FAILED:
+      return FlowParseNote.MALFORMED;
+    case FlowErrorCode.NO_RECORDING:
+      return 'no compiled recording by that name — record one (reticle_record{action:"start"|"stop"}) first';
+  }
 }
 
 /** Map the wire ReplayStatus onto the persisted RunStatus (ok→pass). */
@@ -386,7 +381,7 @@ export async function replayNamedFlow(
       name,
       status: ReplayStatus.ERROR,
       steps: [],
-      error: { code: loaded.code, message: flowErrorMessage(loaded.code, loaded.message) },
+      error: { code: loaded.code, message: flowErrorMessage(loaded.code, loaded.detail) },
     };
   }
   // What this flow is FOR, from the shared ledger — so a failure can report the business outcome

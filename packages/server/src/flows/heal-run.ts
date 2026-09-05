@@ -48,15 +48,14 @@ export async function healFlow(
   const projectId = sessionProjectId(deps, asString(args['sessionId']));
   const loaded = await flowsForSession(deps, projectId).flows.load(name, projectId);
   if (!loaded.ok) {
-    const loadErrorMessage = flowErrorMessage(loaded.code, loaded.message);
     return {
       name,
       status: HealStatus.ERROR,
       applied: false,
       proposals: [],
       changed: [],
-      message: loadErrorMessage,
-      error: { code: loaded.code, message: loadErrorMessage },
+      message: flowErrorMessage(loaded.code, loaded.detail),
+      error: { code: loaded.code, message: flowErrorMessage(loaded.code, loaded.detail) },
     };
   }
 
@@ -166,15 +165,14 @@ export async function healFlow(
     projectId,
   );
   if (!written.ok) {
-    const writeErrorMessage = flowErrorMessage(written.code, written.message);
     return {
       name,
       status: HealStatus.ERROR,
       applied: false,
       proposals,
       changed: [],
-      message: writeErrorMessage,
-      error: { code: written.code, message: writeErrorMessage },
+      message: flowErrorMessage(written.code),
+      error: { code: written.code, message: flowErrorMessage(written.code) },
     };
   }
   return {

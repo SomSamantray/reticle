@@ -211,7 +211,7 @@ describe('reticle_flow_replay handler — temp dir, never touches the repo', () 
           {
             tool: 'reticle_act',
             anchor: { kind: AnchorKind.TESTID, value: 'submit' },
-            expect: { signal: 'x', allOf: [] },
+            expect: { signal: 'x', signl: 'typo' },
           },
         ],
       }),
@@ -224,9 +224,10 @@ describe('reticle_flow_replay handler — temp dir, never touches the repo', () 
     })) as FlowReplayResult;
     expect(res.status).toBe(ReplayStatus.ERROR);
     expect(res.error?.code).toBe(FlowErrorCode.PARSE_FAILED);
-    expect(res.error?.message).toContain('bad-expect');
+    // The flow name is the caller's own argument, so the message spends its words on the part the
+    // caller does NOT have: which step, and which key.
     expect(res.error?.message).toContain('step 0');
-    expect(res.error?.message).toContain('allOf');
+    expect(res.error?.message).toContain('signl');
   });
 
   it('E: an invalid flow name returns a structured error (no path escape)', async () => {
