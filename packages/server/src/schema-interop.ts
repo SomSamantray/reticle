@@ -1,5 +1,6 @@
 import type {
   ZodType,
+  ZodError,
   AnyZodObject,
   ZodDefault,
   ZodEffects,
@@ -40,6 +41,17 @@ export function asServerZodObject(schema: object): AnyZodObject {
  */
 export function asServerZodType<Output>(schema: object): ZodType<Output> {
   return schema as unknown as ZodType<Output>;
+}
+
+/**
+ * `asServerZodType`, but for a `ZodError` a core-built schema's `.parse`/`.safeParse` throws or
+ * returns — e.g. `describeFlowZodFailure(asServerZodError(result.error))` where `result` came from
+ * `FlowFileSchema.safeParse` (a core schema). Reading `.issues`/`.path`/`.code` works identically
+ * either way; only `exactOptionalPropertyTypes` makes the two versions' `ZodError` nominally
+ * incompatible types.
+ */
+export function asServerZodError(error: object): ZodError {
+  return error as unknown as ZodError;
 }
 
 /** A zod internal `_def` carries a `typeName` tag naming its constructor — stable across builds. */
