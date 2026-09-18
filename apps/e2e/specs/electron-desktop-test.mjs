@@ -23,6 +23,7 @@ import {
   spawnElectronSmoke,
   tempCaptures,
 } from '../desktop-harness.mjs';
+import { waitUntil } from '../wait-until.mjs';
 
 const { chk, state } = checker();
 const smokeDir = path.join(ROOT, 'apps/electron-smoke');
@@ -237,9 +238,14 @@ try {
     extraEnv: { RETICLE_SMOKE_NO_PRELOAD: '1' },
     urlIncludes: ':5174',
   });
-  await sleep(2500);
-
-  const net = await blind.tool('reticle_network', {});
+  // The un-instrumented renderer still loads its OWN subresources, and that is what the second check
+  // below asserts — so wait for one to be OBSERVED rather than for 2500ms to pass. The IPC half is an
+  // absence and cannot be polled for; this is the positive half, and it is the half the wait was for.
+  const net =
+    (await waitUntil(async () => {
+      const seen = await blind.tool('reticle_network', {});
+      return (seen.calls ?? []).some((c) => /:5174/.test(String(c.url ?? ''))) ? seen : undefined;
+    })) ?? (await blind.tool('reticle_network', {}));
   // Document-initiated subresource observation means the network view is no longer guaranteed
   // empty without the preload: the page's own <script>/<link>/<img> loads are seen at the
   // session layer. What must still be EMPTY here is the IPC half: no preload, no invoke patch,
@@ -256,10 +262,30 @@ try {
     JSON.stringify(calls.slice(0, 3)),
   );
 
+  // Wait for the APP to finish loading before asserting on what it loaded.
+  //
+  // The wait above is for a subresource of the page, which arrives long before the main process
+  // answers `todos:load` -- that handler sleeps 120ms on purpose, to be a real round trip. So the
+  // assert below was running against `status: "loading"` and failing every time, and the failure
+  // looked like a Reticle defect rather than a spec that measured the wrong event. This replaced a
+  // flat sleep once already; the lesson is not "sleep instead" but "wait for the thing you are
+  // about to assert on to be POSSIBLE, not for something else that happens to be quicker".
+  //
+  // Polled through `reticle_query`, deliberately a different tool from the one under test: waiting
+  // on the assert itself would turn the check below into "assert what we already waited to be
+  // true", which passes whatever Reticle does.
+  const loaded = await waitUntil(async () => {
+    const status = await blind.tool('reticle_query', { by: 'testid', value: 'status' });
+    return JSON.stringify(status).includes('loading') ? undefined : status;
+  });
+  chk('the app finished its IPC load, so there is something to assert on', loaded !== undefined);
+
   const green = await blind.tool('reticle_assert', {
     predicate: { kind: 'text', contains: '2 todos' },
   });
-  chk('a passing assert still passes', green.pass === true);
+  // The payload is printed because this one failed with nothing to go on -- every other check in
+  // this file names its evidence, and the one that did not was the one that needed it.
+  chk('a passing assert still passes', green.pass === true, JSON.stringify(green));
   chk(
     'but it now carries coverage: partial naming the missing preload',
     typeof green.coverage === 'string' && green.coverage.includes('@reticlehq/electron/preload'),

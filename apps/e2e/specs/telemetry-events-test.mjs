@@ -20,7 +20,10 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 import { fileURLToPath } from 'node:url';
-const DIST = join(fileURLToPath(new URL('../../../packages/server/dist', import.meta.url)));
+import { waitUntil } from '../wait-until.mjs';
+const DIST = join(fileURLToPath(new URL('../../../server/dist', import.meta.url)));
+// The rules that decide a verdict are their own package now, so they build to their own dist.
+const ENGINE_DIST = join(fileURLToPath(new URL('../../../engine/dist', import.meta.url)));
 const PORT = 9960;
 
 // Events that happen inside a DAEMON RUN and therefore carry `sessionId`. IMPORTED from core, not
@@ -30,7 +33,7 @@ const PORT = 9960;
 // out of core is the exact drift the telemetry contract forbids, and it is worst here, in the gate
 // that exists to catch telemetry going missing.
 const { isSessionScoped } = await import(
-  new URL('../../../packages/core/dist/index.js', import.meta.url).href
+  new URL('../../../core/dist/index.js', import.meta.url).href
 );
 const SESSION_SCOPED_EVENTS = { has: (event) => isSessionScoped(event) };
 
@@ -65,21 +68,21 @@ writeFileSync(join(root, '.git', 'config'), '[remote "origin"]\n\turl = git@gith
 const { getTelemetry } = await import(`${DIST}/telemetry/telemetry.js`);
 const { getSessionMetrics, resetSessionMetrics } = await import(`${DIST}/telemetry/session-metrics.js`);
 const { installDaemonTelemetry } = await import(`${DIST}/telemetry/daemon-telemetry.js`);
-const { installDaemonResilience } = await import(`${DIST}/daemon/daemon-resilience.js`);
+const { installDaemonResilience } = await import(`${DIST}/command/daemon/daemon-resilience.js`);
 const { submitFeedback } = await import(`${DIST}/telemetry/feedback.js`);
 const { submitIdentity } = await import(`${DIST}/telemetry/identify.js`);
 const { reportCliRun } = await import(`${DIST}/telemetry/cli-telemetry.js`);
-const { runTool } = await import(`${DIST}/tools/invoke-tool.js`);
-const { TOOLS } = await import(`${DIST}/tools/tools.js`);
-const { buildErrorPayload } = await import(`${DIST}/tools/error-recovery.js`);
-const { reportVersionChange } = await import(`${DIST}/update/updater.js`);
+const { runTool } = await import(`${DIST}/surface/tools/invoke-tool.js`);
+const { TOOLS } = await import(`${DIST}/surface/tools/tools.js`);
+const { buildErrorPayload } = await import(`${DIST}/surface/tools/error-recovery.js`);
+const { reportVersionChange } = await import(`${DIST}/command/update/updater.js`);
 const { reportMcpConnected, markDaemonStart } = await import(`${DIST}/telemetry/mcp-connection.js`);
 const { reportInitOutcome, InitFailure } = await import(`${DIST}/telemetry/init-telemetry.js`);
-const { reportMcpOutage, resetOutageReporting, OutageStage } = await import(`${DIST}/mcp/mcp-outage.js`);
-const { decideVerified } = await import(`${DIST}/honesty/verified.js`);
+const { reportMcpOutage, resetOutageReporting, OutageStage } = await import(`${DIST}/surface/mcp/faults/mcp-outage.js`);
+const { decideVerified } = await import(`${ENGINE_DIST}/evidence/verified.js`);
 // Derived from core, never re-listed here — a copied vocabulary is correct on the day it is written
 // and silently wrong at the next addition, which has already cost this repo twice.
-const { VerifiedReason } = await import(new URL('../../../packages/core/dist/index.js', import.meta.url).href);
+const { VerifiedReason } = await import(new URL('../../../core/dist/index.js', import.meta.url).href);
 const VERIFIED_REASONS = new Set(Object.values(VerifiedReason));
 const { classifyConnectFailure } = await import(`${DIST}/telemetry/connect-failure.js`);
 
@@ -204,7 +207,7 @@ await runTool(actTool, deps, { ref: 'e7', action: 'type', args: 'hunter2-passwor
 await settle();
 // The envelope the product's MAIN verification tool returns: no top-level `pass`, the verdict
 // nested under `verdict`, the summary at `verified`. act_and_wait was absent from
-// VERIFICATION_TOOLS AND unreadable by bugsInResult, so every verdict it produced — and every
+// VERDICT_TOOLS AND unreadable by bugsInResult, so every verdict it produced — and every
 // failure — was invisible to both metrics. Measured: act_and_wait 14 calls/day, assert 0.
 const actAndWaitFail = {
   name: 'reticle_act_and_wait',
@@ -668,7 +671,10 @@ await daemon.shutdown('idle');
 }
 
 // ── 10. Project profile (deliberately deferred 5s off the daemon boot path) ───
-await new Promise((r) => setTimeout(r, 6000));
+// The 5s deferral is the PRODUCT's, and it is real. What was invented was the 6000: a one-second
+// margin over it, unconditional, on every run. Wait for the event instead — same 5s floor on an idle
+// machine, and a loaded runner that needs seven gets seven instead of a red.
+await waitUntil(() => find('project_profiled').length > 0);
 // ── ────────────────────────────────────────────────────
 {
   const p = find('project_profiled')[0]?.properties;

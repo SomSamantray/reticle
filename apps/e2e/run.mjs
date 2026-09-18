@@ -90,6 +90,13 @@ const ORDER = [
   'live-control-test',
   'real-world-tests',
   'response-ignored-test',
+  // A saved flow whose declared consequence outlives replay's default 4s wait. Sits beside
+  // response-ignored because it drives the same bench-app fixture, with its slow-endpoint knob.
+  'slow-endpoint-replay-test',
+  // A 401 the app recovered from must not read as two defects. Same bench-app, its own fixture view.
+  'auth-retry-not-a-defect-test',
+  // A file input, an unnamed icon button and a canvas — three properties `apps/` had no fixture for.
+  'awkward-controls-test',
   'multi-agent-lease-test',
   'atlas-hard-fixture-test',
   // Drives a real session and then checks that the EVENTS describe it — a different question from
@@ -113,9 +120,9 @@ const ORDER = [
   'release-smoke-test',
 ];
 // The desktop battery — `pnpm e2e:desktop`. Each of these starts its OWN runtime (an Electron main
-// process, a packaged Tauri binary) and waits for it to dial the bridge, so they need no server from
-// run-ci.sh and would only fail inside it for want of a display.
-const DESKTOP = ['electron-desktop-test', 'tauri-desktop-test'];
+// process, including the electron-vite path, or a packaged Tauri binary) and waits for it to dial
+// the bridge, so they need no server from run-ci.sh and would only fail inside it for want of a display.
+const DESKTOP = ['electron-desktop-test', 'electron-vite-desktop-test', 'tauri-desktop-test'];
 // Specs intentionally excluded from BOTH batteries (add here WITH a reason, never by omission).
 const present = new Set(
   readdirSync(specsDir)
@@ -140,6 +147,26 @@ const desktop = process.argv.includes('--desktop');
 const specs = (desktop ? DESKTOP : ORDER).filter((n) => present.has(n));
 if (specs.length === 0) {
   console.error(`\ne2e: the ${desktop ? 'desktop' : 'web'} battery resolved to zero specs`);
+  process.exit(1);
+}
+// Zero is the collapse. This is the slide.
+//
+// The check above only fires when EVERY spec is gone, and the comment above it says as much:
+// reachable by deleting a file without updating the list. Delete the file AND its entry and the
+// battery shrinks quietly, printing "5/5 specs passed" in the same shape as "39/39" — a green
+// that says less every time somebody tidies, and never says that it is saying less.
+//
+// So the size is recorded, and shrinking the battery costs a deliberate edit to a number a
+// reviewer can see. Growing it costs the same edit, which is the point: both directions are a
+// decision. Measured 2026-09-11.
+const EXPECTED_SPECS = desktop ? 3 : 39;
+if (specs.length !== EXPECTED_SPECS) {
+  console.error(
+    `\ne2e: the ${desktop ? 'desktop' : 'web'} battery resolved to ${String(specs.length)} ` +
+      `specs and ${String(EXPECTED_SPECS)} are recorded.\n` +
+      'Added one? Raise the number here in the same commit. Removed one? Lower it, and say in\n' +
+      'the commit what stopped being covered — that is the sentence this check exists to force.\n',
+  );
   process.exit(1);
 }
 
@@ -221,7 +248,7 @@ async function warnAboutForeignSessions() {
     onNote: (note) => process.stdout.write(`[e2e] ${note}\n`),
   });
   await freePort();
-  const daemon = spawn('node', ['packages/server/dist/cli.js', 'serve', '--port', String(BRIDGE_PORT)], {
+  const daemon = spawn('node', ['server/dist/command/cli.js', 'serve', '--port', String(BRIDGE_PORT)], {
     stdio: 'ignore',
     detached: true,
   });

@@ -98,7 +98,7 @@ export async function bootDesktopSession({
       .map((s) => String(s.url))
       .join(' | ');
     throw new Error(
-      `no NEW session matching '${String(urlIncludes ?? 'any')}' after ${String(timeoutMs)}ms — sessions on the bridge: [${seen}]`,
+      `no NEW session matching '${String(urlIncludes ?? 'any')}' after ${String(timeoutMs)}ms — sessions on the bridge: [${seen}]\n--- app log ---\n${log.join('').slice(-4000)}`,
     );
   }
   const sessionId = found?.sessionId;
@@ -228,14 +228,45 @@ async function answers(port) {
 }
 
 /**
- * Electron's own launcher path. `require('electron')` exports it as a string, so this is what the
- * `electron` CLI would exec — resolved directly so the spec does not depend on a bin shim.
+ * electron-vite boots the renderer server AND Electron from one command. Unlike electron-smoke
+ * (plain Vite on :5174 + a separate `electron .`), there is no second process to launch.
  */
-function resolveElectronBinary() {
-  const require = createRequire(path.join(ROOT, 'apps', 'electron-smoke', 'package.json'));
+export function spawnElectronVite(env) {
+  const appDir = path.join(ROOT, 'apps', 'electron-vue-pinia');
+  return spawn('pnpm', ['dev'], {
+    cwd: appDir,
+    env: {
+      ...env,
+      RETICLE_HEADLESS: '1',
+      // Which Electron electron-vite launches, decided here instead of by module resolution.
+      //
+      // It resolves `electron` from ITS OWN location, not the app's. `@electron-toolkit/preload`
+      // and `@electron-toolkit/utils` both declare `electron` as an EXACT peer on an older major
+      // than this app depends on, so pnpm materialises a second copy for them -- and that copy is
+      // a metadata-only directory whose binary was never downloaded. electron-vite finds it, sees
+      // no `path.txt`, and reports `Error: Electron uninstall`, which reads as "you forgot to
+      // install Electron" about a repository that has it installed twice.
+      //
+      // `ELECTRON_EXEC_PATH` is the first thing its resolver checks, so naming the app's own
+      // binary settles it: the app runs the major it declares, and the peer copy is irrelevant
+      // whether or not anybody ever downloads it.
+      ELECTRON_EXEC_PATH: resolveElectronBinary('electron-vue-pinia'),
+    },
+  });
+}
+
+/**
+ * Electron's own launcher path, as the named app resolves it.
+ *
+ * `require('electron')` exports it as a string, so this is what the `electron` CLI would exec —
+ * resolved directly so the spec does not depend on a bin shim. Resolved from the APP's manifest,
+ * because this repository has two Electron majors installed and only the app can say which is its.
+ */
+function resolveElectronBinary(app = 'electron-smoke') {
+  const require = createRequire(path.join(ROOT, 'apps', app, 'package.json'));
   const bin = require('electron');
   if (typeof bin !== 'string' || !existsSync(bin)) {
-    throw new Error('electron is not installed — run `pnpm install` in apps/electron-smoke');
+    throw new Error(`electron is not installed — run \`pnpm install\` in apps/${app}`);
   }
   return bin;
 }
@@ -258,7 +289,12 @@ export function spawn(command, args, options = {}) {
   // POSIX concept, so the negative-pid kill below is skipped there; Windows already terminates the
   // whole tree for a detached child, which is what the group signal buys us on POSIX.
   const windows = process.platform === 'win32';
-  const child = nodeSpawn(command, args, { detached: true, shell: windows, ...options });
+  // Cursor/VS Code (themselves Electron) export ELECTRON_RUN_AS_NODE. If that reaches a
+  // child Electron, it boots as plain Node: `require('electron').app` is undefined and the
+  // window never exists. CI does not set the var; stripping it is a no-op there.
+  const env = { ...(options.env ?? process.env) };
+  delete env['ELECTRON_RUN_AS_NODE'];
+  const child = nodeSpawn(command, args, { detached: true, shell: windows, ...options, env });
   const killOne = child.kill.bind(child);
   child.kill = (signal = 'SIGTERM') => {
     try {

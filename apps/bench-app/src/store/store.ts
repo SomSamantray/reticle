@@ -14,7 +14,15 @@ import {
 } from '../data/seed.js';
 
 export type ViewId =
-  'overview' | 'deployments' | 'compose' | 'diagnostics' | 'hostile' | 'enterprise' | 'saved-items';
+  | 'overview'
+  | 'deployments'
+  | 'compose'
+  | 'diagnostics'
+  | 'hostile'
+  | 'enterprise'
+  | 'saved-items'
+  | 'expiring-auth'
+  | 'awkward';
 export type EnvFilter = Env | 'all';
 
 export interface Toast {
@@ -50,7 +58,7 @@ interface AppState {
   compose: { title: string; prompt: string; result: string; generating: boolean };
   savedItems: { id: number; label: string; savedAt: string }[];
   savedItemsStatus: 'idle' | 'saving' | 'error';
-  saveItem: (label: string, renderDelayMs?: number) => Promise<void>;
+  saveItem: (label: string, renderDelayMs?: number, serverDelayMs?: number) => Promise<void>;
 
   setView: (v: ViewId) => void;
   setAuth: (email: string) => void;
@@ -93,12 +101,21 @@ export const useApp = create<AppState>((set, get) => ({
   compose: { title: '', prompt: '', result: '', generating: false },
   savedItems: [],
   savedItemsStatus: 'idle',
-  saveItem: async (label, renderDelayMs = 0) => {
+  saveItem: async (label, renderDelayMs = 0, serverDelayMs = 0) => {
     // Do NOT set savedItemsStatus:'saving' here — that STATE_CHANGE fires before the response
     // lands and makes uiAdvanced()=true, which suppresses response-ignored in both polarities.
     // The fixture must stay state-quiet until the response is read.
     try {
-      const res = await fetch('http://localhost:8787/api/saved-items', {
+      // `serverDelayMs` makes the POST ITSELF slow, which is a different fixture from
+      // `renderDelayMs` (a fast response the client renders late). A slow endpoint is the shape that
+      // made an honest saved flow permanently red: replay's wait was a fixed 4s, so a login taking a
+      // measured 5.5s against a remote database, and a model-backed import taking ~22s, both drifted
+      // and were reported to the user as regressions of a working feature.
+      const endpoint =
+        0 < serverDelayMs
+          ? `http://localhost:8787/api/saved-items?delay=${String(serverDelayMs)}`
+          : 'http://localhost:8787/api/saved-items';
+      const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ label }),
@@ -162,11 +179,33 @@ export const useApp = create<AppState>((set, get) => ({
     emit(Sig.DRAWER_OPENED, { id: drawerId });
   },
   closeDrawer: () => set({ drawerId: null }),
+  /**
+   * Same rule as `setPalette` below, and the same fix.
+   *
+   * This one is worse in one respect: it announces on BOTH edges, so a close that closed nothing
+   * claimed `modal:closed` just as readily as a redundant open claimed `modal:opened`. A dialog that
+   * reports being dismissed when it was never on screen is the kind of thing a flow then asserts on.
+   */
   setNewDeploy: (newDeployOpen) => {
+    if (get().newDeployOpen === newDeployOpen) return;
     set({ newDeployOpen });
     emit(newDeployOpen ? Sig.MODAL_OPENED : Sig.MODAL_CLOSED, { modal: 'new-deploy' });
   },
+  /**
+   * A signal is a claim that something HAPPENED, so a no-op must not make one.
+   *
+   * This fired `palette:opened` on every call with `true`, including the common one where the palette
+   * was already open: clicking ⌘K twice, or once while it was showing. Nothing moved — the store held
+   * the same value, so no state diff, and the palette was already mounted, so no DOM change — and the
+   * app announced success anyway.
+   *
+   * Reticle reports exactly that as `signal-without-consequence`: "the app fired palette:opened, and
+   * nothing else in the window moved, so the only evidence that anything happened is the app saying
+   * so". It was right. Found by crawling this fixture twice in a row, where the first crawl leaves the
+   * palette open and the second one clicks ⌘K into a no-op.
+   */
   setPalette: (paletteOpen) => {
+    if (get().paletteOpen === paletteOpen) return;
     set({ paletteOpen });
     if (paletteOpen) emit(Sig.PALETTE_OPENED, {});
   },
