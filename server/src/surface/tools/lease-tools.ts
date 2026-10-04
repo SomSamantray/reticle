@@ -545,7 +545,7 @@ export const LEASE_ACQUIRE_TOOL: ToolDef = {
       .optional()
       .describe('Stable project id to stamp on the leased tab so the agent can scope to it.'),
     seedStorage: SeedStorageSchema.optional().describe(
-      'Initial storage state (localStorage, sessionStorage, cookies) to seed before the first navigation (e.g. to start already authenticated).',
+      'Initial storage state (local, session and cookies) to seed before the first navigation (e.g. `seedStorage: { local: { token: "..." } }` to start already authenticated).',
     ),
   },
   outputSchema: {

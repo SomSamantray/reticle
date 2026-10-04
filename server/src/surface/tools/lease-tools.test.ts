@@ -750,6 +750,17 @@ describe('prioritising a tab that is already open', () => {
 });
 
 describe('reticle_lease with seedStorage', () => {
+  it('describes the accepted seedStorage keys and an example', () => {
+    const definition = LEASE_TOOLS.find((entry) => entry.name === ReticleTool.LEASE_ACQUIRE);
+
+    expect(definition?.inputSchema['seedStorage']?.description).toContain(
+      'local, session and cookies',
+    );
+    expect(definition?.inputSchema['seedStorage']?.description).toContain(
+      'seedStorage: { local: { token: "..." } }',
+    );
+  });
+
   it('propagates seedStorage to pool.acquire and never echoes seeded values in the tool result', async () => {
     const { pool, acquired } = fakePool();
     const deps = { ...baseDeps, pool } as unknown as ToolDeps;
