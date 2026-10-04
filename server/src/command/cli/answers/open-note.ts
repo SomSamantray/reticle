@@ -1,3 +1,5 @@
+import { ReticleTool } from '@reticlehq/core';
+
 /**
  * What `reticle open` says when it launched a URL and no session appeared.
  *
@@ -45,6 +47,6 @@ export function openLaunchFailureNote(url: string, launcher: string): string {
     'Nothing was opened. This command asks the OS to open a url in your default browser ' +
     `(\`${launcher}\` on this platform) and that failed, so open the url yourself or set a default ` +
     'browser. If you are using Reticle tools, open it in a Reticle-owned browser with ' +
-    `\`reticle_run { tool: "reticle_lease", args: { action: "acquire", url: ${JSON.stringify(url)} } }\`.`
+    `\`${ReticleTool.RUN} { tool: "${ReticleTool.LEASE}", args: { action: "acquire", url: ${JSON.stringify(url)} } }\`.`
   );
 }

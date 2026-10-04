@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { ReticleTool } from '@reticlehq/core';
 import { openFailureNote, openLaunchFailureNote } from './open-note.js';
 
 describe('reticle open, when it silently used a different daemon', () => {
@@ -38,7 +39,7 @@ describe('reticle open, when the OS browser launcher fails', () => {
   it('offers the Reticle-owned browser lease with the URL', () => {
     const note = openLaunchFailureNote('http://localhost:5173', 'xdg-open');
     expect(note).toContain('`xdg-open`');
-    expect(note).toContain('reticle_run { tool: "reticle_lease"');
+    expect(note).toContain(`${ReticleTool.RUN} { tool: "${ReticleTool.LEASE}"`);
     expect(note).toContain('action: "acquire"');
     expect(note).toContain('url: "http://localhost:5173"');
   });
