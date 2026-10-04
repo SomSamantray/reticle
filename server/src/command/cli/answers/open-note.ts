@@ -38,3 +38,13 @@ export function openFailureNote(port: number, requestedPort: number): string {
     `(~/.reticle/pairing-token) — the flag alone is not sufficient.`
   );
 }
+
+/** Recovery when the OS could not open a URL: agents can use Reticle's browser lease instead. */
+export function openLaunchFailureNote(url: string, launcher: string): string {
+  return (
+    'Nothing was opened. This command asks the OS to open a url in your default browser ' +
+    `(\`${launcher}\` on this platform) and that failed, so open the url yourself or set a default ` +
+    'browser. If you are using Reticle tools, open it in a Reticle-owned browser with ' +
+    `\`reticle_run { tool: "reticle_lease", args: { action: "acquire", url: ${JSON.stringify(url)} } }\`.`
+  );
+}
